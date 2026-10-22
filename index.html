@@ -1,0 +1,992 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="theme-color" content="#16754A" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#19201C" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="실무엑셀"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="물류 현장 데이터로 푸는 엑셀 단축키·함수·참조 155문제. 표를 직접 끌어서 범위를 잡고 F4로 $를 붙여보는 연습 웹앱."><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>엑셀 실무 드릴</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 열 워크시트 — 이름상자·수식 입력줄 머리, 시트 탭으로 단계 전환, 셀 격자에서 직접 범위 선택 */
+:root{
+  --bg:#F2F5F3; --surface:#FFFFFF; --ink:#1A2420; --muted:#5B6A62; --line:#D3DCD6; --hdr:#E8EEEA;
+  --accent:#16754A; --accent-ink:#FFFFFF; --accent-soft:#DCEFE3;
+  --ok:#1C7A45; --ok-soft:#E1F2E8; --bad:#B53D2A; --bad-soft:#F9E6E1;
+  --r1:#2D6BD6; --r2:#CC3F33; --r3:#8646C6; --r4:#B57710;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111613; --surface:#19201C; --ink:#E4EBE7; --muted:#93A39A; --line:#2C3631; --hdr:#1F2722;
+  --accent:#3FBF7B; --accent-ink:#0B1A11; --accent-soft:#1D3328;
+  --ok:#4CC985; --ok-soft:#173023; --bad:#F08A72; --bad-soft:#3A201A;
+  --r1:#6E9DF5; --r2:#F07A6E; --r3:#B78BF0; --r4:#E6B24E; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#19201C; --ink:#E4EBE7; --muted:#93A39A; --line:#2C3631; --hdr:#1F2722;
+  --accent:#3FBF7B; --accent-ink:#0B1A11; --accent-soft:#1D3328;
+  --ok:#4CC985; --ok-soft:#173023; --bad:#F08A72; --bad-soft:#3A201A;
+  --r1:#6E9DF5; --r2:#F07A6E; --r3:#B78BF0; --r4:#E6B24E; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:18px 48px}
+#app{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono)}
+
+/* masthead */
+.fbar{display:flex;border:1px solid var(--line);background:var(--surface);font-family:var(--mono);font-size:13px;border-radius:4px;overflow:hidden}
+.fbar span{padding:6px 10px;white-space:nowrap}
+.nb{width:58px;border-right:1px solid var(--line);color:var(--muted)}
+.fxl{border-right:1px solid var(--line);color:var(--muted);font-style:italic}
+.ft{color:var(--accent);overflow:hidden;text-overflow:ellipsis;min-width:0}
+h1{font-size:30px;line-height:1.2;letter-spacing:-0.02em;margin:6px 0 0;text-wrap:balance}
+.sub{margin:0;color:var(--muted);max-width:60ch}
+.meter{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meter .bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.meter .bar i{display:block;height:100%;background:var(--accent)}
+
+/* sheet tabs */
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tab{flex:1;background:transparent;border:0;border-bottom:3px solid transparent;padding:10px 0 8px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.3}
+.tab small{font-size:11px;font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface);font-weight:700}
+
+/* list */
+.list{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:13px 14px}
+.item:last-child{border-bottom:0}
+.item:hover{background:var(--hdr)}
+.item b{font-family:var(--mono);font-size:16px}
+.item .sig{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:8px}
+.item p{grid-column:1;margin:0;font-size:13.5px;color:var(--muted)}
+.dots{display:flex;gap:4px;grid-row:1 / span 2;grid-column:2}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;color:var(--muted)}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;padding:4px 0}
+.link.armed{color:var(--bad)}
+
+/* play */
+.top{display:flex;align-items:center;gap:10px}
+.back{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13.5px}
+.gname{font-family:var(--mono);font-weight:600;font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qnav{display:flex;gap:6px}
+.qnav button{width:30px;height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-family:var(--mono);color:var(--muted)}
+.qnav button.on{border-color:var(--accent);color:var(--accent);font-weight:600}
+.qnav button.done{background:var(--accent-soft);color:var(--accent)}
+.q{font-size:17px;font-weight:500;margin:0;text-wrap:pretty}
+.formula{display:flex;gap:10px;align-items:baseline;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+.formula .fx{font-family:var(--mono);font-style:italic;color:var(--muted);flex:none}
+.expr{font-family:var(--mono);font-size:15px;line-height:2.1;min-width:0;word-break:break-word}
+.lit{font-weight:600}
+.slot{font-family:var(--mono);font-size:15px;line-height:1.4;padding:1px 6px;margin:0 1px;border-radius:4px;border:1.5px solid transparent;background:transparent;color:var(--hl);font-weight:600}
+.slot.choice{color:var(--ink)}
+.slot.empty{border:1.5px dashed var(--hl);color:var(--muted);font-weight:400;font-family:var(--sans);font-size:13px}
+.slot.choice.empty{border-color:var(--muted)}
+.slot.on{background:color-mix(in srgb, var(--hl) 14%, transparent);border-style:solid;border-color:var(--hl)}
+.slot.choice.on{--hl:var(--accent)}
+.helper{min-height:42px;display:flex;flex-direction:column;gap:8px}
+.hint{margin:0;font-size:14px;color:var(--muted)}
+.hint b{color:var(--hl,var(--ink))}
+.msg{margin:0;font-size:13.5px;color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:14px;padding:7px 12px;border:1px solid var(--line);background:var(--surface);border-radius:6px}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.actions{display:flex;gap:8px;justify-content:flex-end}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:10px 18px;font-weight:700;display:inline-flex;gap:8px;align-items:center}
+.primary[aria-disabled="true"]{opacity:.45}
+.primary kbd{font-family:var(--mono);font-size:11px;opacity:.8;border:1px solid currentColor;border-radius:3px;padding:0 4px}
+.ghost{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+.fb{border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border:1px solid}
+.fb.ok{background:var(--ok-soft);border-color:color-mix(in srgb, var(--ok) 35%, transparent)}
+.fb.bad{background:var(--bad-soft);border-color:color-mix(in srgb, var(--bad) 35%, transparent)}
+.fb.show{background:var(--surface);border-color:var(--line)}
+.fb .h{font-weight:700}
+.fb.ok .h{color:var(--ok)} .fb.bad .h{color:var(--bad)}
+.fb p{margin:0;font-size:14px}
+.fb code{font-family:var(--mono);font-weight:600;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 6px;word-break:break-all}
+.fb .row{display:flex;gap:8px;flex-wrap:wrap}
+.fb .row button{padding:8px 14px}
+.tip{margin:0;font-size:13px;color:var(--muted);background:var(--hdr);border-radius:6px;padding:10px 12px}
+.tip b{color:var(--ink);font-weight:600}
+
+/* grid */
+.sheetwrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+.sheet{display:grid;width:max-content;min-width:100%;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.c{height:36px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0 6px;display:flex;align-items:center;font-size:13px;white-space:pre;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.c.h{background:var(--hdr);color:var(--muted);justify-content:center;font-size:11.5px;font-family:var(--mono);height:24px}
+.c.rn{height:36px}
+.c.d{cursor:cell;font-variant-numeric:tabular-nums;touch-action:none}
+@media (max-width:400px){ .c{font-size:12px;padding:0 4px} .c.num{font-size:11.5px} }
+.c.num{justify-content:flex-end;font-family:var(--mono);font-size:12.5px}
+.c.th{font-weight:700}
+.c.hl{background:color-mix(in srgb, var(--hl) 16%, var(--surface))}
+.c.fillv{justify-content:flex-end;font-family:var(--mono);font-weight:600;color:var(--accent)}
+.c.errv{color:var(--bad)}
+.why{margin:0;font-size:13.5px;line-height:1.6}
+.ctabw{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.ctab{border-collapse:collapse;font-family:var(--mono);font-size:12.5px;width:100%}
+.ctab th{font-family:var(--sans);font-weight:500;color:var(--muted);text-align:left;font-size:11.5px}
+.ctab th,.ctab td{padding:4px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.ctab tr:last-child td{border-bottom:0}
+.ctab tr.x td{color:var(--bad);font-weight:600}
+.f4{font-family:var(--mono);font-size:13px}
+.reft{border-collapse:collapse;margin:2px 0 8px;font-size:13px}
+.reft td{padding:3px 10px 3px 0;vertical-align:top}
+.reft td:first-child{font-family:var(--mono);font-weight:600;color:var(--ink);white-space:nowrap}
+
+/* shortcuts */
+.combo{min-height:68px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px}
+.combo .ph{color:var(--muted);font-size:14px}
+.kc{font-family:var(--mono);font-weight:600;min-width:44px;padding:7px 12px;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;background:var(--bg);text-align:center}
+.plus{color:var(--muted)}
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mod,.key{font-family:var(--mono);padding:11px 4px;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;background:var(--surface);font-size:14px}
+.mod{font-weight:600}
+.mod.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.key.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.lbl{font-size:12px;color:var(--muted);margin:2px 0 -6px;letter-spacing:.04em}
+@media (prefers-reduced-motion: no-preference){ .chip,.mod,.key,.slot{transition:background .12s, border-color .12s} }
+</style>
+
+<style>body{margin:0;-webkit-tap-highlight-color:transparent}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}button{touch-action:manipulation}</style></head><body><div id="app"></div>
+
+<script>
+const SH={
+sum:`월|경산|대구|칠곡
+1월|120|85|64
+2월|135|92|70
+3월|148|77|58
+4월|110|101|81
+5월|156|88|69`,
+avg:`작업자|월|화|수|목
+김민수|142|156|138|160
+이지은|128|133|141|150
+박정호|165|170|158|172
+최유나|110|124|119|131
+정다은|150|146|162|155`,
+maxmin:`품목|재고|안전재고|입고예정
+볼트|320|150|200
+너트|85|120|300
+와셔|410|200|0
+스프링|60|100|150
+핀|230|180|100
+브래킷|145|90|50`,
+count:`입고번호|업체|수량|검수
+R-01|대성|120|OK
+R-02|한빛|미정|OK
+R-03|대성|80|OK
+R-04|서진||보류
+R-05|한빛|200|OK
+R-06|서진|150|`,
+round:`품목|개당원가|회전율
+볼트|347.256|4.375
+너트|212.849|6.818
+와셔|95.5|12.142
+스프링|1250.63|2.506`,
+ifs:`작업자|정확도|처리건수
+김민수|99.2|142
+이지은|97.5|128
+박정호|99.6|165
+최유나|96.8|110
+정다은|98.4|150`,
+orders:`오더|지역|수량|상태
+O-101|서울|120|완료
+O-102|부산|80|대기
+O-103|서울|200|완료
+O-104|대구|45|지연
+O-105|부산|150|완료
+O-106|서울|60|지연
+O-107|대구|90|완료`,
+master:`코드|품목|단가|재고|조회
+P-101|볼트|350|320|P-103
+P-102|너트|210|85|P-105
+P-103|와셔|95|410|P-101
+P-104|스프링|1200|60|P-104
+P-105|핀|150|230|P-102`,
+text:`로케이션|송장번호|품번
+A-03-12|KR20261016001|BLT-M8-030
+B-11-04|KR20261016002|NUT-M10-000
+C-07-21|US20261015118|WSH-M6-012`,
+flow:`월|창고|품목|수량
+9월|경산|볼트|120
+9월|대구|볼트|90
+10월|경산|볼트|150
+10월|경산|너트|80
+10월|대구|볼트|110
+10월|대구|너트|60
+9월|경산|너트|70`,
+supp:`공급사|리드타임|코드|단가|조회
+대성정밀|5|S-01|350|S-03
+한빛산업|3|S-02|340|S-01
+서진테크|7|S-03|320|S-04
+동아부품|4|S-04|365|S-02
+미래금속|6|S-05|330|S-05`,
+err:`코드|품목|단가|조회
+P-101|볼트|350|P-102
+P-102|너트|210|P-109
+P-103|와셔|95|P-101
+P-104|스프링|1200|P-200
+P-105|핀|150|P-105`,
+xl:`로케이션|품번|품명|수량|조회
+A-01|BLT-08|볼트 M8|320|NUT-10
+A-02|NUT-10|너트 M10|85|WSH-06
+B-01|WSH-06|와셔 M6|410|BLT-08
+B-02|SPR-02|스프링|60|PIN-04
+C-01|PIN-04|핀|230|XXX-99`,
+roundx:`품목|필요박스|파렛트|원가
+볼트|12.2|1.35|347.256
+너트|8.7|0.92|212.849
+와셔|15.05|2.04|95.5`,
+lentrim:`거래처|송장번호
+  대성정밀 |KR20261016001
+한빛산업  |KR2026101602
+ 서진테크|US20261015118`,
+concat:`창고|구역|랙번호|품번|규격
+GS|A|R03|BLT|M8
+DG|B|R11|NUT|M10
+CG|C|R07|WSH|M6`,
+avgif:`작업자|조|처리건수|오류
+김민수|A조|142|2
+이지은|B조|128|0
+박정호|A조|165|3
+최유나|B조|110|1
+정다은|A조|150|0
+한지훈|B조|136|4`,
+andor:`오더|수량|검수|재고
+O-201|120|OK|300
+O-202|80|NG|150
+O-203|200|OK|90
+O-204|40|OK|500`,
+txt:`구분|값
+금액|1250000
+불량률|0.0372
+출고일|2026-10-16
+박스번호|7`,
+date:`발주번호|발주일|납기일
+PO-01|2026-10-05|2026-10-14
+PO-02|2026-10-08|2026-10-20
+PO-03|2026-10-16|2026-10-30
+PO-04|2026-09-28|2026-10-09`,
+sp:`품목|수량|단가|운임
+볼트|120|350|15
+너트|85|210|12
+와셔|240|95|8
+스프링|60|1200|40`,
+ref1:`품목|수량|금액||단가
+볼트|120|||350
+너트|85|||
+와셔|240|||
+스프링|60|||
+핀|150|||`,
+ref2:`주문코드|품목||코드|품목명
+P-102|||P-101|볼트
+P-101|||P-102|너트
+P-103|||P-103|와셔
+P-101||||`,
+ref3:`월|출고량|누계
+1월|120|
+2월|135|
+3월|148|
+4월|110|
+5월|156|`,
+ref4:`창고|출고량|구성비
+경산|669|
+대구|443|
+칠곡|342|
+합계|1454|`,
+ref5:`단가/수량|10|20|30
+100|||
+250|||
+400|||`,
+uniq:`입고일|공급사|품목
+10/01|대성|볼트
+10/01|한빛|너트
+10/02|대성|와셔
+10/02|서진|볼트
+10/03|한빛|볼트
+10/04|대성|너트
+10/05|미래|핀`
+};
+
+/* ---------- 계산 엔진 ---------- */
+const L=i=>String.fromCharCode(65+i);
+const NUM=/^-?\d+(\.\d+)?$/;
+const pc=s=>s===''?null:(NUM.test(s)?Number(s):s);
+const sheetOf=t=>t.split('\n').map(l=>l.split('|').map(x=>pc(x.replace(/\r/g,''))));
+const pv=s=>{ if(s==='TRUE')return true; if(s==='FALSE')return false; const m=/^"(.*)"$/.exec(s); if(m)return m[1]; if(NUM.test(s))return Number(s); return s; };
+const E=c=>({e:c}); const isErr=v=>!!(v&&typeof v==='object'&&v.e);
+function rg(s){ const p=x=>{const m=/^(\$?)([A-Z])(\$?)(\d+)$/.exec(x);return{r:+m[4]-1,c:m[2].charCodeAt(0)-65,ca:!!m[1],ra:!!m[3]}}; const [a,b]=s.split(':'); const A=p(a),B=b?p(b):A; const g=norm({r1:A.r,c1:A.c,r2:B.r,c2:B.c}); g.m=A.ca&&A.ra?1:A.ra?2:A.ca?3:0; return g; }
+const sameRef=(u,v)=>u.r1===v.r1&&u.c1===v.c1&&u.r2===v.r2&&u.c2===v.c2;
+const cellsOf=g=>{const o=[];for(let r=g.r1;r<=g.r2;r++)for(let c=g.c1;c<=g.c2;c++)o.push([r,c]);return o};
+function norm(g){ return {r1:Math.min(g.r1,g.r2),c1:Math.min(g.c1,g.c2),r2:Math.max(g.r1,g.r2),c2:Math.max(g.c1,g.c2)}; }
+function refStr(g){ const m=g.m||0; const cs=x=>((m===1||m===3)?'$':'')+L(x), rs=x=>((m===1||m===2)?'$':'')+(x+1); const a=cs(g.c1)+rs(g.r1); return (g.r1===g.r2&&g.c1===g.c2)?a:a+':'+cs(g.c2)+rs(g.r2); }
+const covers=(u,v)=>u.r1<=v.r1&&u.c1<=v.c1&&u.r2>=v.r2&&u.c2>=v.c2;
+function block(S,g){ const o=[]; for(let r=g.r1;r<=g.r2;r++){const row=[];for(let c=g.c1;c<=g.c2;c++)row.push(S[r]&&S[r][c]!=null?S[r][c]:null);o.push(row)} return o; }
+const flat=(S,g)=>block(S,g).flat();
+const nums=(S,g)=>flat(S,g).filter(v=>typeof v==='number');
+const val=(S,g)=>S[g.r1]&&S[g.r1][g.c1]!=null?S[g.r1][g.c1]:null;
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const same=(a,b)=>(a===null||b===null)?a===b:(typeof a==='number'&&typeof b==='number')?a===b:String(a).toLowerCase()===String(b).toLowerCase();
+const cmpv=(a,b)=>(typeof a==='number'&&typeof b==='number')?a-b:String(a).localeCompare(String(b));
+function rnd(x,d){ return Number(Math.round(Number(x+'e'+d))+'e'+(-d)); }
+function opTest(v,op,n){ return op==='>'?v>n:op==='<'?v<n:op==='>='?v>=n:op==='<='?v<=n:op==='<>'?v!==n:v===n; }
+function crit(v,c){
+  if(typeof c==='number') return v===c;
+  const m=/^(>=|<=|<>|>|<|=)?(.*)$/.exec(String(c)); const op=m[1]||'='; const rhs=m[2];
+  const rn=NUM.test(rhs)?Number(rhs):null;
+  if(rn!==null&&op!=='='&&op!=='<>') return typeof v==='number'&&opTest(v,op,rn);
+  const eq=rn!==null?v===rn:(v!==null&&String(v).toLowerCase()===rhs.toLowerCase());
+  return op==='<>'?!eq:eq;
+}
+function vlookup(S,v,g,col,exact){
+  const B=block(S,g); if(col<1) return E('#VALUE!'); if(col>B[0].length) return E('#REF!');
+  let idx=-1;
+  if(exact) idx=B.findIndex(r=>same(r[0],v));
+  else B.forEach((r,i)=>{ if(r[0]!==null&&cmpv(r[0],v)<=0) idx=i; });
+  if(idx<0) return E('#N/A'); const o=B[idx][col-1]; return o===null?0:o;
+}
+function match(S,v,g,t){
+  const A=flat(S,g); let i=-1;
+  if(t===0) i=A.findIndex(x=>same(x,v));
+  else A.forEach((x,k)=>{ if(x!==null&&(t===1?cmpv(x,v)<=0:cmpv(x,v)>=0)) i=k; });
+  return i<0?E('#N/A'):i+1;
+}
+function condEval(v,c){
+  const m=/^(>=|<=|<>|>|<|=)(.+)$/.exec(String(c)); if(!m) return E('#VALUE!');
+  const rhs=pv(m[2]);
+  if(typeof rhs==='number') return typeof v==='number'&&opTest(v,m[1],rhs);
+  const eq=v!==null&&String(v).toLowerCase()===String(rhs).toLowerCase();
+  return m[1]==='<>'?!eq:m[1]==='='?eq:false;
+}
+const DRE=/^(\d{4})-(\d{2})-(\d{2})$/;
+const toD=v=>{const m=DRE.exec(String(v));return m?new Date(+m[1],m[2]-1,+m[3]):null};
+const p2=n=>String(n).padStart(2,'0');
+const ds=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+function workdays(a,b){ const s=a<=b?1:-1; let n=0; const d=new Date(a); for(;;){ const w=d.getDay(); if(w>0&&w<6) n++; if(d.getTime()===b.getTime()) break; d.setDate(d.getDate()+s); } return n*s; }
+function rup(x,d,up){ const s=x<0?-1:1, a=Math.abs(x); const f=up?Math.ceil:Math.floor; return s*Number(f(Number(a+'e'+d))+'e'+(-d)); }
+function fmtTxt(v,f){
+  const d=toD(v), n=typeof v==='number';
+  if(f==='#,##0'&&n) return Math.round(v).toLocaleString('en-US');
+  if(f==='0.0%'&&n) return rnd(Number(v+'e2'),1).toFixed(1)+'%';
+  if(f==='000'&&n) return String(Math.round(v)).padStart(3,'0');
+  if(d&&f==='aaa') return '일월화수목금토'[d.getDay()];
+  if(d&&f==='mm/dd') return p2(d.getMonth()+1)+'/'+p2(d.getDate());
+  if(d&&f==='yyyy-mm-dd') return ds(d);
+  return E('#VALUE!');
+}
+function shiftF(f,dr,dc){ return f.replace(/(\$?)([A-Z])(\$?)(\d+)/g,(m,a,c,b,r)=>a+(a?c:String.fromCharCode(c.charCodeAt(0)+dc))+b+(b?r:(+r+dr))); }
+function evalF(src,S){
+  const t=[]; const re=/\s*(\$?[A-Z]\$?\d+(?::\$?[A-Z]\$?\d+)?|\d+(?:\.\d+)?|"[^"]*"|[A-Z]+|[-+*\/(),])/y; let m;
+  while(re.lastIndex<src.length&&(m=re.exec(src))) t.push(m[1]);
+  let i=0;
+  const ar=(a,b,o)=>{ if(isErr(a))return a; if(isErr(b))return b; a=a??0; b=b??0; if(typeof a!=='number'||typeof b!=='number')return E('#VALUE!'); if(o==='/'&&b===0)return E('#DIV/0!'); return o==='+'?a+b:o==='-'?a-b:o==='*'?a*b:a/b; };
+  function ex(){ let v=te(); while(t[i]==='+'||t[i]==='-'){const o=t[i++]; v=ar(v,te(),o)} return v; }
+  function te(){ let v=fa(); while(t[i]==='*'||t[i]==='/'){const o=t[i++]; v=ar(v,fa(),o)} return v; }
+  function fa(){ const k=t[i++];
+    if(k==='('){ const v=ex(); i++; return v; }
+    if(/^\$?[A-Z]\$?\d/.test(k)){ const g=rg(k); if(g.r1<0||g.c1<0) return E('#REF!'); return k.includes(':')?{rng:g}:val(S,g); }
+    if(/^\d/.test(k)) return Number(k);
+    if(k[0]==='"') return k.slice(1,-1);
+    if(k==='TRUE'||k==='FALSE') return k==='TRUE';
+    i++; const args=[]; if(t[i]!==')'){ args.push(ex()); while(t[i]===','){ i++; args.push(ex()); } } i++;
+    if(k==='SUM'){ let s=0; for(const a of args){ if(a&&a.rng) s+=sum(nums(S,a.rng)); else if(isErr(a)) return a; else if(typeof a==='number') s+=a; } return s; }
+    if(k==='VLOOKUP'){ if(isErr(args[0])) return args[0]; return vlookup(S,args[0],args[1].rng,args[2],args[3]===false||args[3]===0); }
+    return E('#NAME?');
+  }
+  return ex();
+}
+function multi(S,pairs){
+  const cols=pairs.map(([g,c])=>({a:flat(S,g),c})); const n=cols[0].a.length;
+  if(cols.some(x=>x.a.length!==n)) return null;
+  const hit=[]; for(let i=0;i<n;i++) hit.push(cols.every(x=>crit(x.a[i],x.c))); return hit;
+}
+
+/* ---------- 문제 데이터 ---------- */
+const R=n=>({t:'range',n}), RW=n=>({t:'range',n,wide:true,abs:true}), RA=n=>({t:'range',n,abs:true}), C=n=>({t:'cell',n}), O=n=>({t:'choice',n});
+const iq=(q,cell,cond,t,f,co)=>({q,sol:[cell,cond,t,f],opts:{1:co,2:[t,f].sort(),3:[t,f].sort()}});
+const tq=(fn,q,sol,opts)=>({q,fn,sol,opts,tpl:fn==='MID'?'MID({0}, {1}, {2})':fn+'({0}, {1})',slots:fn==='MID'?[C('셀'),O('시작 위치'),O('글자 수')]:[C('셀'),O('글자 수')]});
+const CR=['"9월"','"10월"','"경산"','"대구"','"볼트"','"너트"'];
+
+const LEVELS=[{id:'key',name:'단축키'},{id:'basic',name:'기초'},{id:'mid',name:'중급'},{id:'adv',name:'고급'}];
+const MODS=['Ctrl','Shift','Alt'];
+const KEYS=['방향키','Home','Space','Enter','F2','F4',';','=','1','C','D','G','L','T','V','Z'];
+
+const GROUPS=[
+{id:'k-nav',level:'key',kind:'key',name:'이동·선택',sig:'Ctrl+방향키',desc:'마우스 없이 표 끝까지 이동하고 범위 잡기',items:[
+  {q:'수천 행짜리 출고 데이터에서 맨 아래 행까지 한 번에 내려가기',k:['Ctrl','방향키'],w:'Ctrl+↓는 빈 칸을 만나는 지점에서 멈춥니다. 중간에 빈 행이 끼어 있으면 거기서 서니까 데이터 구멍을 찾을 때도 씁니다.'},
+  {q:'현재 셀부터 데이터 끝까지 드래그 없이 선택하기',k:['Ctrl','Shift','방향키'],w:'수식에 넣을 범위를 잡을 때 마우스로 끄는 것보다 정확합니다. 몇만 행이어도 한 번에 잡힙니다.'},
+  {q:'어디까지 내려갔든 A1 셀로 돌아오기',k:['Ctrl','Home'],w:'틀 고정이 걸려 있으면 고정 영역 바로 아래 첫 칸으로 갑니다.'},
+  {q:'지금 있는 행 전체 선택하기',k:['Shift','Space'],w:'이어서 Ctrl+- 를 누르면 그 행이 삭제됩니다. 한/영 전환 설정이 Shift+Space로 잡혀 있는 PC에선 안 먹힐 수 있어요.'},
+  {q:'지금 있는 열 전체 선택하기',k:['Ctrl','Space'],w:'열 서식을 한 번에 바꾸거나 열을 숨길 때 먼저 누릅니다.'}]},
+{id:'k-edit',level:'key',kind:'key',name:'입력·편집',sig:'F2 · F4 · Ctrl+;',desc:'셀 수정, 날짜 입력, 절대참조 전환',items:[
+  {q:'셀을 더블클릭하지 않고 바로 수정 모드로 들어가기',k:['F2'],w:'수식 안에서 한 번 더 누르면 방향키가 셀 이동이 아니라 커서 이동으로 바뀝니다.'},
+  {q:'한 셀 안에서 줄을 바꿔 두 줄로 쓰기',k:['Alt','Enter'],w:'비고란에 메모를 길게 적을 때. 그냥 Enter는 다음 셀로 넘어가 버립니다.'},
+  {q:'입고일 칸에 오늘 날짜 넣기',k:['Ctrl',';'],w:'TODAY()와 달리 값으로 박혀서 내일 파일을 열어도 날짜가 안 바뀝니다. 입고 기록엔 이쪽이 맞습니다.'},
+  {q:'윗 셀의 값이나 수식을 선택 범위 아래로 그대로 채우기',k:['Ctrl','D'],w:'오른쪽으로 채우기는 Ctrl+R. 범위를 먼저 잡고 누릅니다.'},
+  {q:'수식 입력 중 A1을 $A$1 절대참조로 바꾸기',k:['F4'],w:'누를 때마다 $A$1 → A$1 → $A1 → A1 순으로 돕니다. 수식 밖에서 누르면 직전 작업을 반복합니다.'}]},
+{id:'k-data',level:'key',kind:'key',name:'서식·데이터',sig:'Ctrl+1 · Ctrl+Shift+L',desc:'셀 서식, 필터, 자동 합계, 값 붙여넣기',items:[
+  {q:'셀 서식(표시 형식·맞춤·테두리) 창 열기',k:['Ctrl','1'],w:'숫자 1은 키보드 위쪽 숫자열의 1입니다. 날짜가 숫자로 보일 때 바로 여기서 고칩니다.'},
+  {q:'머리글 행에 필터 켜고 끄기',k:['Ctrl','Shift','L'],w:'필터가 꼬였을 때 두 번 눌러서 초기화하는 용도로도 자주 씁니다.'},
+  {q:'숫자 열 아래 빈 칸에 SUM 자동 합계 넣기',k:['Alt','='],w:'범위를 알아서 잡아주지만 중간에 빈 칸이 있으면 거기서 끊기니 한 번 확인하세요.'},
+  {q:'데이터 범위를 표(Table)로 바꾸기',k:['Ctrl','T'],w:'표로 만들어 두면 행을 추가해도 수식과 피벗 범위가 따라 늘어납니다.'},
+  {q:'복사한 수식 결과를 값만 붙여넣으려고 "선택하여 붙여넣기" 창 열기',k:['Ctrl','Alt','V'],w:'창이 뜨면 V, Enter. 보고서를 넘기기 전에 수식 연결을 끊을 때 거의 매번 씁니다.'}]},
+
+{id:'REF',level:'basic',kind:'ref',loose:true,name:'참조 $',sig:'A1 · $A$1 · A$1 · $A1',desc:'상대·절대·혼합참조, 수식 복사할 때 어디를 고정할지',tip:'<table class="reft"><tr><td>A1</td><td>상대참조. 복사하면 행·열이 같이 움직임</td></tr><tr><td>$A$1</td><td>절대참조. 어디로 복사해도 그 칸 고정</td></tr><tr><td>A$1</td><td>행만 고정. 아래로 복사해도 1행 그대로</td></tr><tr><td>$A1</td><td>열만 고정. 옆으로 복사해도 A열 그대로</td></tr></table>$는 바로 뒤에 붙은 것(열 문자 또는 행 번호)을 고정합니다. 수식 입력 중 F4를 누를 때마다 A1 → $A$1 → A$1 → $A1 순서로 바뀝니다. 다른 함수 문제에서도 범위를 고른 뒤 <b>F4 $고정</b> 버튼으로 $를 붙일 수 있습니다.',
+ ev:(A,S,P)=>{const f=P.tpl.replace(/\{(\d)\}/g,(_,i)=>A[+i]);const o=rg(P.at);return cellsOf(rg(P.copy)).map(([r,c])=>evalF(shiftF(f,r-o.r1,c-o.c1),S))},qs:[
+  {q:'C2에 금액(수량×단가)을 넣고 C6까지 아래로 복사합니다. 단가는 E2 한 칸뿐이에요.',sheet:'ref1',at:'C2',copy:'C2:C6',tpl:'{0}*{1}',slots:[O('수량'),O('단가')],opts:{0:['B2','$B$2'],1:['E2','$E$2','E$2','$E2']},sol:['B2','$E$2'],
+   why:'단가 E2를 상대참조로 두면 아래로 복사할 때 E3, E4…로 따라 내려가 빈 칸을 곱하게 되고 금액이 0이 됩니다. $E$2로 고정하면 모든 행이 같은 단가를 봅니다. 수량 B2는 행마다 달라야 하니 상대참조로 둡니다. 아래로만 복사한다면 행만 고정한 E$2도 결과는 같습니다.'},
+  {q:'B2에 주문코드의 품목명을 VLOOKUP으로 찾고 B5까지 아래로 복사합니다.',sheet:'ref2',at:'B2',copy:'B2:B5',tpl:'VLOOKUP({0}, {1}, 2, FALSE)',slots:[O('찾을 값'),O('표 범위')],opts:{0:['A2','$A$2'],1:['D2:E4','$D$2:$E$4','$D2:$E4']},sol:['A2','$D$2:$E$4'],
+   why:'표 범위를 고정하지 않으면 한 줄 내려갈 때마다 범위도 D3:E5, D4:E6으로 같이 내려갑니다. 그러면 맨 위 P-101 행이 범위 밖으로 빠져서 #N/A가 납니다. 열만 고정한 $D2:$E4도 아래로 복사하면 똑같이 밀립니다. 찾을 값 A2는 행마다 바뀌어야 하니 상대참조로 두고, 표 범위는 F4로 $D$2:$E$4처럼 고정하는 게 실무 기본입니다.'},
+  {q:'C2에 1월부터 그 달까지의 누계를 구하고 C6까지 아래로 복사합니다.',sheet:'ref3',at:'C2',copy:'C2:C6',tpl:'SUM({0}:{1})',slots:[O('시작'),O('끝')],opts:{0:['B2','$B$2'],1:['B2','$B$2']},sol:['$B$2','B2'],
+   why:'시작점 $B$2는 고정하고 끝점 B2는 상대참조로 두면, 아래로 복사할 때 $B$2:B3, $B$2:B4처럼 끝만 늘어나 누계가 됩니다. 둘 다 상대참조면 범위가 통째로 내려가 그 달 값 하나만 더하고, 둘 다 고정이면 1월 값만 반복됩니다.'},
+  {q:'C2에 창고별 구성비(출고량÷합계)를 넣고 C4까지 아래로 복사합니다.',sheet:'ref4',at:'C2',copy:'C2:C4',tpl:'{0}/{1}',slots:[O('출고량'),O('합계')],opts:{0:['B2','$B$2'],1:['B5','$B$5','$B5']},sol:['B2','$B$5'],
+   why:'합계는 B5 한 칸뿐이라 고정해야 합니다. 상대참조로 두면 한 줄 내려갈 때 B6, B7을 가리켜 빈 칸으로 나누게 되고 #DIV/0! 오류가 납니다. 열만 고정한 $B5도 행이 움직여서 같은 오류가 납니다.'},
+  {q:'B2에 단가×수량을 넣고 오른쪽·아래로 D4까지 복사해서 표를 채웁니다.',sheet:'ref5',at:'B2',copy:'B2:D4',tpl:'{0}*{1}',slots:[O('단가'),O('수량')],opts:{0:['A2','$A2','A$2','$A$2'],1:['B1','$B1','B$1','$B$1']},sol:['$A2','B$1'],
+   why:'양쪽으로 복사할 때는 혼합참조를 씁니다. 단가는 늘 A열에 있으니 열만 고정($A2), 수량은 늘 1행에 있으니 행만 고정(B$1). 이렇게 두면 C3에서는 $A3*C$1, D4에서는 $A4*D$1로 알맞게 바뀝니다. 둘 다 $A$2처럼 완전 고정하면 표 전체가 같은 값이 됩니다.'}]},
+
+{id:'SUM',level:'basic',name:'SUM',sig:'=SUM(범위)',desc:'선택한 범위의 숫자를 모두 더함',tip:'더할 칸을 표에서 손가락으로 끌어 선택하세요. 머리글이 같이 잡혀도 글자는 더해지지 않습니다.',
+ sheet:'sum',tpl:'SUM({0})',slots:[R('범위')],ev:(A,S)=>sum(nums(S,A[0])),qs:[
+  ['경산 창고의 1~5월 출고량 합계는?',['B2:B6']],
+  ['3월 한 달 동안 세 창고 출고량 합계는?',['B4:D4']],
+  ['대구 창고의 1~3월 출고량 합계는?',['C2:C4']],
+  ['칠곡 창고의 2~5월 출고량 합계는?',['D3:D6']],
+  ['1~2월 세 창고 출고량을 한 번에 더하면?',['B2:D3']]]},
+{id:'AVERAGE',level:'basic',name:'AVERAGE',sig:'=AVERAGE(범위)',desc:'숫자들의 평균',tip:'빈 칸과 글자는 평균에서 빠지고 0은 들어갑니다. 결과가 소수로 길게 나오면 ROUND로 감싸는 게 보통입니다.',
+ sheet:'avg',tpl:'AVERAGE({0})',slots:[R('범위')],ev:(A,S)=>{const n=nums(S,A[0]);return n.length?sum(n)/n.length:E('#DIV/0!')},qs:[
+  ['박정호의 월~목 하루 평균 처리건수는?',['B4:E4']],
+  ['월요일 작업자 5명의 평균 처리건수는?',['B2:B6']],
+  ['목요일 작업자 5명의 평균 처리건수는?',['E2:E6']],
+  ['김민수의 화~목 평균 처리건수는?',['C2:E2']],
+  ['이지은·박정호의 월~수 처리건수 전체 평균은?',['B3:D4']]]},
+{id:'MAXMIN',level:'basic',name:'MAX·MIN',sig:'=MAX(범위)',desc:'가장 큰 값 / 가장 작은 값',tip:'수식 맨 앞의 <b>함수</b> 칸을 눌러 MAX인지 MIN인지 먼저 고르고, 범위를 끌어 선택하세요.',
+ sheet:'maxmin',tpl:'{0}({1})',slots:[O('함수'),R('범위')],opts:{0:['MAX','MIN']},ev:(A,S)=>{const n=nums(S,A[1]);return n.length?Math[A[0]==='MAX'?'max':'min'](...n):0},qs:[
+  ['현재 재고가 가장 많은 품목의 재고 수량은?',['MAX','B2:B7']],
+  ['현재 재고가 가장 적은 품목의 재고 수량은?',['MIN','B2:B7']],
+  ['안전재고 기준 중 가장 높은 값은?',['MAX','C2:C7']],
+  ['입고예정 수량 중 가장 작은 값은?',['MIN','D2:D7']],
+  ['너트의 재고·안전재고·입고예정 세 숫자 중 가장 큰 값은?',['MAX','B3:D3']]]},
+{id:'COUNT',level:'basic',name:'COUNT·COUNTA',sig:'=COUNTA(범위)',desc:'숫자 칸 개수 / 비어있지 않은 칸 개수',tip:'COUNT는 숫자만, COUNTA는 글자까지 셉니다. 수량에 "미정" 같은 글자가 섞이면 둘의 결과가 갈립니다. 머리글을 같이 잡으면 COUNTA가 하나 더 셉니다.',
+ sheet:'count',tpl:'{0}({1})',slots:[O('함수'),R('범위')],opts:{0:['COUNT','COUNTA']},ev:(A,S)=>A[0]==='COUNT'?nums(S,A[1]).length:flat(S,A[1]).filter(v=>v!==null).length,qs:[
+  ['수량이 숫자로 제대로 입력된 입고 건수는?',['COUNT','C2:C7']],
+  ['검수 결과가 뭐라도 적혀 있는 건수는?',['COUNTA','D2:D7']],
+  ['입고번호 기준 전체 입고 건수는?',['COUNTA','A2:A7']],
+  ['수량 칸 중 비어 있지 않은 칸 수는? ("미정" 포함)',['COUNTA','C2:C7']],
+  ['R-01~R-03 세 건 중 수량이 숫자인 건수는?',['COUNT','C2:C4']]]},
+{id:'ROUND',level:'basic',name:'ROUND',sig:'=ROUND(셀, 자릿수)',desc:'원하는 자릿수에서 반올림',tip:'자릿수 1은 소수 첫째 자리, 0은 정수, -1은 십의 자리까지 남깁니다. 단가 계산에서 원 단위 끝처리할 때 씁니다.',
+ sheet:'round',tpl:'ROUND({0}, {1})',slots:[C('셀'),O('자릿수')],opts:{1:['-1','0','1','2']},ev:(A,S)=>{const v=val(S,A[0]);return typeof v==='number'?rnd(v,A[1]):E('#VALUE!')},qs:[
+  ['볼트 개당원가를 소수 첫째 자리까지 반올림하면?',['B2','1']],
+  ['너트 개당원가를 정수(원 단위)로 반올림하면?',['B3','0']],
+  ['스프링 개당원가를 십 원 단위로 반올림하면?',['B5','-1']],
+  ['와셔 회전율을 소수 둘째 자리까지 반올림하면?',['C4','2']],
+  ['볼트 회전율을 소수 첫째 자리까지 반올림하면?',['C2','1']]]},
+
+{id:'IF',level:'mid',name:'IF',sig:'=IF(조건, 참, 거짓)',desc:'조건에 따라 다른 값 표시',tip:'셀을 누른 뒤 비교 조건을 고르고, 참일 때 값과 거짓일 때 값을 차례로 고르세요. 이상은 >=, 초과는 >, 미만은 &lt; 입니다.',
+ sheet:'ifs',tpl:'IF({0}{1}, {2}, {3})',slots:[C('셀'),O('조건'),O('참일 때'),O('거짓일 때')],
+ ev:(A,S)=>{const r=condEval(val(S,A[0]),A[1]);return isErr(r)?r:(r?A[2]:A[3])},qs:[
+  iq('김민수의 정확도가 99% 이상이면 "우수", 아니면 "보통"','B2','>=99','"우수"','"보통"',['>=99','>99','<99','<=99']),
+  iq('최유나의 정확도가 98% 미만이면 "교육대상", 아니면 "-"','B5','<98','"교육대상"','"-"',['>=98','>98','<98','<=98']),
+  iq('이지은의 처리건수가 130건 이상이면 "달성", 아니면 "미달"','C3','>=130','"달성"','"미달"',['>=130','>130','<130','<=130']),
+  iq('박정호의 처리건수가 150건을 넘으면 "인센티브", 아니면 "없음"','C4','>150','"인센티브"','"없음"',['>=150','>150','<150','=150']),
+  iq('정다은의 정확도가 99% 이상이면 "우수", 아니면 "보통"','B6','>=99','"우수"','"보통"',['>=99','>99','<99','=99'])]},
+{id:'COUNTIF',absRec:true,level:'mid',name:'COUNTIF',sig:'=COUNTIF(범위, 조건)',desc:'조건에 맞는 칸 개수',tip:'조건은 따옴표 안에 씁니다. 숫자 비교는 "&gt;=100", 같지 않음은 "&lt;&gt;완료" 형태입니다.',
+ sheet:'orders',tpl:'COUNTIF({0}, {1})',slots:[R('범위'),O('조건')],opts:{1:['"서울"','"부산"','"완료"','"지연"','"<>완료"','">=100"','"<50"']},
+ ev:(A,S)=>flat(S,A[0]).filter(v=>crit(v,A[1])).length,qs:[
+  ['서울로 나가는 오더는 몇 건?',['B2:B8','"서울"']],
+  ['상태가 "완료"인 오더는 몇 건?',['D2:D8','"완료"']],
+  ['수량이 100개 이상인 오더는 몇 건?',['C2:C8','">=100"']],
+  ['아직 완료되지 않은 오더는 몇 건? (대기·지연 모두)',['D2:D8','"<>완료"']],
+  ['수량이 50개 미만인 소량 오더는 몇 건?',['C2:C8','"<50"']]]},
+{id:'SUMIF',absRec:true,level:'mid',name:'SUMIF',sig:'=SUMIF(조건범위, 조건, 합계범위)',desc:'조건에 맞는 행의 합계',tip:'조건 범위와 합계 범위의 행 위치를 맞추세요. 조건 범위와 합계 범위가 같은 열이면 세 번째 인수는 생략해도 됩니다.',
+ sheet:'orders',tpl:'SUMIF({0}, {1}, {2})',slots:[R('조건 범위'),O('조건'),R('합계 범위')],opts:{1:['"서울"','"부산"','"대구"','"완료"','"지연"','">=100"','"<100"']},
+ ev:(A,S,P)=>{const g=A[0],s=A[2];const sr={r1:s.r1,c1:s.c1,r2:s.r1+(g.r2-g.r1),c2:s.c1+(g.c2-g.c1)};const a=flat(S,g),b=flat(S,sr);let t=0;a.forEach((v,i)=>{if(crit(v,A[1])&&typeof b[i]==='number')t+=b[i]});return t},qs:[
+  ['서울로 나간 수량 합계는?',['B2:B8','"서울"','C2:C8']],
+  ['완료된 오더의 수량 합계는?',['D2:D8','"완료"','C2:C8']],
+  ['부산으로 나간 수량 합계는?',['B2:B8','"부산"','C2:C8']],
+  ['지연된 오더의 수량 합계는?',['D2:D8','"지연"','C2:C8']],
+  ['수량이 100개 이상인 오더들의 수량 합계는?',['C2:C8','">=100"','C2:C8']]]},
+{id:'VLOOKUP',level:'mid',name:'VLOOKUP',sig:'=VLOOKUP(값, 표, 열, FALSE)',desc:'코드로 표에서 값 찾아오기',tip:'찾을 값이 표 범위의 <b>첫 열</b>에 있어야 합니다. 열 번호는 범위 첫 열을 1로 셉니다. 실무에선 거의 항상 FALSE(정확히 일치)를 씁니다. 범위를 고른 뒤 <b>F4 $고정</b>을 눌러 $A$2처럼 고정해야 정답입니다. 이 수식은 보통 아래 행으로 복사해서 쓰는데, $가 없으면 복사할 때 표 범위도 한 칸씩 같이 내려가 위쪽 데이터가 빠지고 #N/A가 납니다.',
+ sheet:'master',tpl:'VLOOKUP({0}, {1}, {2}, {3})',slots:[C('찾을 값'),RW('표 범위'),O('열 번호'),O('일치 방식')],opts:{2:['1','2','3','4'],3:['FALSE','TRUE']},
+ ev:(A,S)=>vlookup(S,val(S,A[0]),A[1],A[2],A[3]===false||A[3]===0),qs:[
+  ['E2에 적힌 코드의 품목명은?',['E2','A2:D6','2','FALSE']],
+  ['E3에 적힌 코드의 단가는?',['E3','A2:D6','3','FALSE']],
+  ['E4에 적힌 코드의 현재 재고는?',['E4','A2:D6','4','FALSE']],
+  ['E5에 적힌 코드의 단가는?',['E5','A2:D6','3','FALSE']],
+  ['E6에 적힌 코드의 품목명은?',['E6','A2:D6','2','FALSE']]]},
+{id:'TEXT',level:'mid',name:'LEFT·RIGHT·MID',sig:'=MID(셀, 시작, 글자수)',desc:'글자 일부 잘라내기',tip:'하이픈(-)도 한 글자로 셉니다. MID는 시작 위치와 글자 수 두 개를 넣습니다. 송장번호에서 날짜나 국가코드를 떼어낼 때 씁니다.',
+ sheet:'text',ev:(A,S,P)=>{const s=String(val(S,A[0])??'');return P.fn==='LEFT'?s.slice(0,A[1]):P.fn==='RIGHT'?(A[1]?s.slice(-A[1]):''):s.substr(A[1]-1,A[2])},qs:[
+  tq('LEFT','로케이션 A-03-12에서 맨 앞 구역 문자만 꺼내기',['A2','1'],{1:['1','2','3']}),
+  tq('LEFT','송장번호 US20261015118에서 앞 2글자 국가코드 꺼내기',['B4','2'],{1:['1','2','3','4']}),
+  tq('RIGHT','송장번호 KR20261016001에서 끝 3자리 일련번호 꺼내기',['B2','3'],{1:['2','3','4']}),
+  tq('MID','품번 NUT-M10-000에서 규격 "M10"만 꺼내기',['C3','5','3'],{1:['4','5','6'],2:['2','3','4']}),
+  tq('MID','송장번호 KR20261016002에서 날짜 8자리 꺼내기',['B3','3','8'],{1:['2','3','4'],2:['6','8','10']})]},
+
+{id:'SUMIFS',absRec:true,level:'adv',name:'SUMIFS',sig:'=SUMIFS(합계, 범위1, 조건1, …)',desc:'여러 조건을 모두 만족하는 합계',tip:'SUMIF와 달리 <b>합계 범위가 맨 앞</b>입니다. 조건 범위·조건 쌍은 순서를 바꿔 넣어도 됩니다.',
+ sheet:'flow',tpl:'SUMIFS({0}, {1}, {2}, {3}, {4})',slots:[R('합계 범위'),R('조건 범위1'),O('조건1'),R('조건 범위2'),O('조건2')],pairs:[[1,2],[3,4]],opts:{2:CR,4:CR},
+ ev:(A,S)=>{const h=multi(S,[[A[1],A[2]],[A[3],A[4]]]);const s=flat(S,A[0]);if(!h||s.length!==h.length)return E('#VALUE!');return sum(s.filter((v,i)=>h[i]&&typeof v==='number'))},qs:[
+  ['10월에 경산 창고에서 나간 수량 합계는?',['D2:D8','A2:A8','"10월"','B2:B8','"경산"']],
+  ['대구 창고에서 나간 볼트 수량 합계는?',['D2:D8','B2:B8','"대구"','C2:C8','"볼트"']],
+  ['9월에 출고된 볼트 수량 합계는?',['D2:D8','A2:A8','"9월"','C2:C8','"볼트"']],
+  ['10월에 출고된 너트 수량 합계는?',['D2:D8','A2:A8','"10월"','C2:C8','"너트"']],
+  ['경산 창고의 너트 출고 수량 합계는?',['D2:D8','B2:B8','"경산"','C2:C8','"너트"']]]},
+{id:'COUNTIFS',absRec:true,level:'adv',name:'COUNTIFS',sig:'=COUNTIFS(범위1, 조건1, …)',desc:'여러 조건을 모두 만족하는 개수',tip:'조건 범위와 조건을 쌍으로 넣습니다. 모든 조건 범위는 행 개수가 같아야 하고, 쌍 순서는 바뀌어도 됩니다.',
+ sheet:'flow',tpl:'COUNTIFS({0}, {1}, {2}, {3})',slots:[R('조건 범위1'),O('조건1'),R('조건 범위2'),O('조건2')],pairs:[[0,1],[2,3]],opts:{1:[...CR,'">=100"','"<100"','">70"'],3:[...CR,'">=100"','"<100"','">70"']},
+ ev:(A,S)=>{const h=multi(S,[[A[0],A[1]],[A[2],A[3]]]);return h?h.filter(Boolean).length:E('#VALUE!')},qs:[
+  ['10월에 대구 창고에서 나간 출고 건수는?',['A2:A8','"10월"','B2:B8','"대구"']],
+  ['볼트 중 수량이 100개 이상인 건수는?',['C2:C8','"볼트"','D2:D8','">=100"']],
+  ['9월 경산 창고 출고 건수는?',['A2:A8','"9월"','B2:B8','"경산"']],
+  ['너트 중 수량이 70개를 넘는 건수는?',['C2:C8','"너트"','D2:D8','">70"']],
+  ['10월 출고 중 수량이 100개 미만인 건수는?',['A2:A8','"10월"','D2:D8','"<100"']]]},
+{id:'INDEXMATCH',level:'adv',name:'INDEX·MATCH',sig:'=INDEX(범위, MATCH(…))',desc:'왼쪽 방향까지 되는 조회',tip:'MATCH가 찾을 값이 몇 번째 행인지 알아내고, INDEX가 그 위치의 값을 꺼냅니다. 공급사명처럼 결과가 코드 열 <b>왼쪽</b>에 있어도 됩니다. 두 범위의 행 위치를 맞추세요. 범위를 고른 뒤 <b>F4 $고정</b>을 눌러 $A$2처럼 고정해야 정답입니다. 이 수식은 보통 아래 행으로 복사해서 쓰는데, $가 없으면 복사할 때 표 범위도 한 칸씩 같이 내려가 위쪽 데이터가 빠지고 #N/A가 납니다.',
+ sheet:'supp',tpl:'INDEX({0}, MATCH({1}, {2}, {3}))',slots:[RA('가져올 범위'),C('찾을 값'),RA('찾을 범위'),O('일치 방식')],opts:{3:['0','1','-1']},
+ ev:(A,S)=>{const p=match(S,val(S,A[1]),A[2],A[3]);if(isErr(p))return p;const a=flat(S,A[0]);if(p>a.length)return E('#REF!');return a[p-1]??0},qs:[
+  ['E2 공급사 코드의 공급사명은?',['A2:A6','E2','C2:C6','0']],
+  ['E3 공급사 코드의 리드타임(일)은?',['B2:B6','E3','C2:C6','0']],
+  ['E4 공급사 코드의 단가는?',['D2:D6','E4','C2:C6','0']],
+  ['E5 공급사 코드의 공급사명은?',['A2:A6','E5','C2:C6','0']],
+  ['E6 공급사 코드의 리드타임(일)은?',['B2:B6','E6','C2:C6','0']]]},
+{id:'IFERROR',level:'adv',name:'IFERROR',sig:'=IFERROR(수식, 대체값)',desc:'오류 대신 원하는 값 표시',tip:'VLOOKUP이 못 찾으면 #N/A가 나오는데, IFERROR로 감싸면 지정한 값이 대신 나옵니다. 진짜 오류까지 가려지니 검산은 따로 하세요. 범위를 고른 뒤 <b>F4 $고정</b>을 눌러 $A$2처럼 고정해야 정답입니다. 이 수식은 보통 아래 행으로 복사해서 쓰는데, $가 없으면 복사할 때 표 범위도 한 칸씩 같이 내려가 위쪽 데이터가 빠지고 #N/A가 납니다.',
+ sheet:'err',tpl:'IFERROR(VLOOKUP({0}, {1}, {2}, FALSE), {3})',slots:[C('찾을 값'),RW('표 범위'),O('열 번호'),O('못 찾으면')],opts:{2:['1','2','3'],3:['"미등록"','"확인필요"','0','""']},
+ ev:(A,S)=>{const r=vlookup(S,val(S,A[0]),A[1],A[2],true);return isErr(r)?A[3]:r},qs:[
+  ['D2 코드의 품목명. 못 찾으면 "미등록"',['D2','A2:C6','2','"미등록"']],
+  ['D3 코드의 품목명. 못 찾으면 "미등록"',['D3','A2:C6','2','"미등록"']],
+  ['D4 코드의 단가. 못 찾으면 0',['D4','A2:C6','3','0']],
+  ['D5 코드의 단가. 못 찾으면 0',['D5','A2:C6','3','0']],
+  ['D6 코드의 품목명. 못 찾으면 "확인필요"',['D6','A2:C6','2','"확인필요"']]]},
+{id:'XLOOKUP',level:'adv',name:'XLOOKUP',sig:'=XLOOKUP(값, 찾을범위, 가져올범위)',desc:'VLOOKUP 후속, 방향 제한 없음',tip:'찾을 범위와 가져올 범위를 따로 지정하고, 못 찾을 때 값도 함수 안에서 바로 정합니다. 엑셀 2021·M365부터 됩니다. 범위를 고른 뒤 <b>F4 $고정</b>을 눌러 $A$2처럼 고정해야 정답입니다. 이 수식은 보통 아래 행으로 복사해서 쓰는데, $가 없으면 복사할 때 표 범위도 한 칸씩 같이 내려가 위쪽 데이터가 빠지고 #N/A가 납니다.',
+ sheet:'xl',tpl:'XLOOKUP({0}, {1}, {2}, {3})',slots:[C('찾을 값'),RA('찾을 범위'),RA('가져올 범위'),O('못 찾으면')],opts:{3:['"없음"','0','""']},
+ ev:(A,S)=>{const la=flat(S,A[1]),ra=flat(S,A[2]);if(la.length!==ra.length)return E('#VALUE!');const i=la.findIndex(x=>same(x,val(S,A[0])));return i<0?A[3]:(ra[i]??0)},qs:[
+  ['E2 품번이 보관된 로케이션은? 못 찾으면 "없음"',['E2','B2:B6','A2:A6','"없음"']],
+  ['E3 품번의 수량은? 못 찾으면 0',['E3','B2:B6','D2:D6','0']],
+  ['E4 품번의 품명은? 못 찾으면 "없음"',['E4','B2:B6','C2:C6','"없음"']],
+  ['E5 품번이 보관된 로케이션은? 못 찾으면 "없음"',['E5','B2:B6','A2:A6','"없음"']],
+  ['E6 품번의 수량은? 못 찾으면 0',['E6','B2:B6','D2:D6','0']]]},
+
+/* ---- 추가: 기초 ---- */
+{id:'ROUNDX',level:'basic',name:'ROUNDUP·ROUNDDOWN',sig:'=ROUNDUP(셀, 자릿수)',desc:'무조건 올림 / 무조건 버림',tip:'박스·파렛트처럼 쪼갤 수 없는 수량은 올림, 원 미만 단가는 버림이 보통입니다. 자릿수 규칙은 ROUND와 같습니다.',
+ sheet:'roundx',tpl:'{0}({1}, {2})',slots:[O('함수'),C('셀'),O('자릿수')],opts:{0:['ROUNDUP','ROUNDDOWN'],2:['-1','0','1','2']},
+ ev:(A,S)=>{const v=val(S,A[1]);return typeof v==='number'?rup(v,A[2],A[0]==='ROUNDUP'):E('#VALUE!')},qs:[
+  ['볼트는 12.2박스가 필요합니다. 실제로 준비할 박스 수는?',['ROUNDUP','B2','0']],
+  ['와셔 적재량은 2.04파렛트입니다. 필요한 파렛트 수는?',['ROUNDUP','C4','0']],
+  ['너트 원가를 원 미만 버림하면?',['ROUNDDOWN','D3','0']],
+  ['볼트 원가를 십 원 미만 버림하면?',['ROUNDDOWN','D2','-1']],
+  ['와셔 필요박스를 소수 첫째 자리에서 올림 처리하면?',['ROUNDUP','B4','1']]]},
+{id:'LENTRIM',level:'basic',name:'LEN·TRIM',sig:'=TRIM(셀)',desc:'글자 수 세기 / 앞뒤 공백 지우기',tip:'다른 시스템에서 내려받은 데이터는 공백이 섞여 있어서 VLOOKUP이 못 찾는 일이 잦습니다. TRIM으로 정리하고, 코드 자릿수는 LEN으로 검사합니다.',
+ sheet:'lentrim',tpl:'{0}({1})',slots:[O('함수'),C('셀')],opts:{0:['LEN','TRIM']},
+ ev:(A,S)=>{const s=String(val(S,A[1])??'');return A[0]==='LEN'?s.length:s.replace(/ +/g,' ').trim()},qs:[
+  ['대성정밀 거래처명의 앞뒤 공백을 지우면?',['TRIM','A2']],
+  ['두 번째 송장번호는 몇 자리인가요? (정상은 13자리)',['LEN','B3']],
+  ['첫 번째 송장번호는 몇 자리인가요?',['LEN','B2']],
+  ['한빛산업 거래처명의 뒤 공백을 지우면?',['TRIM','A3']],
+  ['서진테크 칸은 공백 포함 몇 글자인가요?',['LEN','A4']]]},
+{id:'CONCAT',level:'basic',name:'CONCAT·&',sig:'=CONCAT(셀, "-", 셀)',desc:'여러 칸의 글자 이어 붙이기',tip:'=A2&"-"&B2 처럼 & 기호로 써도 결과가 같습니다. 로케이션 코드나 품번+규격 조합 키를 만들 때 씁니다.',
+ sheet:'concat',tpl:'CONCAT({0}, {1}, {2})',slots:[C('앞 셀'),O('구분자'),C('뒤 셀')],opts:{1:['"-"','"_"','" "','"/"']},
+ ev:(A,S)=>String(val(S,A[0])??'')+A[1]+String(val(S,A[2])??''),qs:[
+  ['GS 창고 줄의 창고와 구역을 "-"로 이어 붙이면?',['A2','"-"','B2']],
+  ['DG 창고 줄의 품번과 규격을 "-"로 이으면?',['D3','"-"','E3']],
+  ['CG 창고 줄의 품번과 규격을 띄어쓰기로 이으면?',['D4','" "','E4']],
+  ['DG 창고 줄의 창고와 랙번호를 "_"로 이으면?',['A3','"_"','C3']],
+  ['GS 창고 줄의 구역과 랙번호를 "-"로 이으면?',['B2','"-"','C2']]]},
+{id:'LARGESMALL',level:'basic',name:'LARGE·SMALL',sig:'=LARGE(범위, 순위)',desc:'n번째로 큰 값 / 작은 값',tip:'MAX·MIN이 1등만 알려준다면 LARGE·SMALL은 2등, 3등도 꺼냅니다. 순위 1은 MAX·MIN과 같습니다.',
+ sheet:'maxmin',tpl:'{0}({1}, {2})',slots:[O('함수'),R('범위'),O('순위')],opts:{0:['LARGE','SMALL'],2:['1','2','3']},
+ ev:(A,S)=>{const n=nums(S,A[1]).sort((a,b)=>A[0]==='LARGE'?b-a:a-b);return A[2]>=1&&A[2]<=n.length?n[A[2]-1]:E('#NUM!')},qs:[
+  ['재고가 두 번째로 많은 품목의 재고 수량은?',['LARGE','B2:B7','2']],
+  ['재고가 두 번째로 적은 품목의 재고 수량은?',['SMALL','B2:B7','2']],
+  ['안전재고 중 세 번째로 큰 값은?',['LARGE','C2:C7','3']],
+  ['입고예정 수량 중 두 번째로 작은 값은?',['SMALL','D2:D7','2']],
+  ['재고가 세 번째로 많은 품목의 재고 수량은?',['LARGE','B2:B7','3']]]},
+
+/* ---- 추가: 중급 ---- */
+{id:'AVERAGEIF',absRec:true,level:'mid',name:'AVERAGEIF',sig:'=AVERAGEIF(조건범위, 조건, 평균범위)',desc:'조건에 맞는 행만 평균',tip:'구조는 SUMIF와 똑같고 합계 대신 평균을 냅니다. 조 별, 거래처 별 평균 리드타임을 볼 때 씁니다.',
+ sheet:'avgif',tpl:'AVERAGEIF({0}, {1}, {2})',slots:[R('조건 범위'),O('조건'),R('평균 범위')],opts:{1:['"A조"','"B조"','0','">=130"','">0"']},
+ ev:(A,S)=>{const g=A[0],s=A[2];const sr={r1:s.r1,c1:s.c1,r2:s.r1+(g.r2-g.r1),c2:s.c1+(g.c2-g.c1)};const a=flat(S,g),b=flat(S,sr);const h=[];a.forEach((v,i)=>{if(crit(v,A[1])&&typeof b[i]==='number')h.push(b[i])});return h.length?sum(h)/h.length:E('#DIV/0!')},qs:[
+  ['A조 작업자의 평균 처리건수는?',['B2:B7','"A조"','C2:C7']],
+  ['B조 작업자의 평균 처리건수는?',['B2:B7','"B조"','C2:C7']],
+  ['A조 작업자의 평균 오류 건수는?',['B2:B7','"A조"','D2:D7']],
+  ['오류가 0건인 작업자들의 평균 처리건수는?',['D2:D7','0','C2:C7']],
+  ['처리건수 130건 이상인 작업자들의 평균 처리건수는?',['C2:C7','">=130"','C2:C7']]]},
+{id:'ANDOR',level:'mid',name:'IF+AND·OR',sig:'=IF(AND(조건1, 조건2), …)',desc:'조건 두 개를 묶어서 판단',tip:'AND는 둘 다 맞아야, OR는 하나만 맞아도 참입니다. 글자 비교는 ="OK"처럼 따옴표를 씁니다. 조건 두 개의 순서는 바뀌어도 됩니다.',
+ sheet:'andor',tpl:'IF({0}({1}{2}, {3}{4}), "출고", "보류")',slots:[O('함수'),C('셀1'),O('조건1'),C('셀2'),O('조건2')],pairs:[[1,2],[3,4]],
+ opts:{0:['AND','OR'],2:['="OK"','<>"OK"','>=100','<100','>=400'],4:['="OK"','<>"OK"','>=100','<100','>=400']},
+ ev:(A,S)=>{const a=condEval(val(S,A[1]),A[2]),b=condEval(val(S,A[3]),A[4]);if(isErr(a))return a;if(isErr(b))return b;return (A[0]==='AND'?a&&b:a||b)?'출고':'보류'},qs:[
+  ['O-201: 검수가 OK이고 재고가 100 이상이면 "출고"',['AND','C2','="OK"','D2','>=100']],
+  ['O-203: 검수가 OK이고 재고가 100 이상이면 "출고"',['AND','C4','="OK"','D4','>=100']],
+  ['O-204: 수량이 100 미만(소량)이거나 재고가 400 이상이면 "출고"',['OR','B5','<100','D5','>=400']],
+  ['O-202: 검수가 OK이고 재고가 100 이상이면 "출고"',['AND','C3','="OK"','D3','>=100']],
+  ['O-203: 수량이 100 미만이거나 재고가 400 이상이면 "출고"',['OR','B4','<100','D4','>=400']]]},
+{id:'TEXTFMT',level:'mid',name:'TEXT',sig:'=TEXT(값, "서식")',desc:'숫자·날짜를 원하는 모양의 글자로',tip:'보고서 문장에 금액이나 날짜를 끼워 넣을 때 씁니다. "aaa"는 한글 요일 한 글자, "000"은 앞자리를 0으로 채웁니다. 결과는 글자라서 다시 계산에 쓰긴 어렵습니다.',
+ sheet:'txt',tpl:'TEXT({0}, {1})',slots:[C('셀'),O('서식')],opts:{1:['"#,##0"','"0.0%"','"000"','"aaa"','"mm/dd"','"yyyy-mm-dd"']},
+ ev:(A,S)=>fmtTxt(val(S,A[0]),A[1]),qs:[
+  ['금액에 천 단위 콤마를 넣어 표시하면?',['B2','"#,##0"']],
+  ['불량률을 소수 첫째 자리 퍼센트로 표시하면?',['B3','"0.0%"']],
+  ['출고일이 무슨 요일인지 한 글자로 표시하면?',['B4','"aaa"']],
+  ['박스번호를 세 자리(앞에 0 채움)로 표시하면?',['B5','"000"']],
+  ['출고일을 월/일 형태로 표시하면?',['B4','"mm/dd"']]]},
+{id:'DATE',level:'mid',name:'NETWORKDAYS·EOMONTH',sig:'=NETWORKDAYS(시작, 끝)',desc:'영업일 수 / 월말 날짜',tip:'NETWORKDAYS는 토·일을 빼고 셉니다. 공휴일(예: 10/9 한글날)까지 빼려면 세 번째 인수로 휴일 목록 범위를 넣어야 합니다. EOMONTH의 개월 0은 이번 달 말일, 1은 다음 달 말일입니다.',
+ sheet:'date',ev:(A,S,P)=>{const a=toD(val(S,A[0]));if(!a)return E('#VALUE!');if(P.fn==='EOMONTH')return ds(new Date(a.getFullYear(),a.getMonth()+A[1]+1,0));const b=toD(val(S,A[1]));return b?workdays(a,b):E('#VALUE!')},qs:[
+  {q:'PO-01의 발주일부터 납기일까지 영업일 수는? (주말 제외)',fn:'NETWORKDAYS',tpl:'NETWORKDAYS({0}, {1})',slots:[C('시작일'),C('종료일')],sol:['B2','C2']},
+  {q:'PO-02의 발주일부터 납기일까지 영업일 수는?',fn:'NETWORKDAYS',tpl:'NETWORKDAYS({0}, {1})',slots:[C('시작일'),C('종료일')],sol:['B3','C3']},
+  {q:'PO-04의 발주일부터 납기일까지 영업일 수는?',fn:'NETWORKDAYS',tpl:'NETWORKDAYS({0}, {1})',slots:[C('시작일'),C('종료일')],sol:['B5','C5']},
+  {q:'PO-04 발주월의 월말 마감일은?',fn:'EOMONTH',tpl:'EOMONTH({0}, {1})',slots:[C('기준일'),O('개월')],opts:{1:['-1','0','1']},sol:['B5','0']},
+  {q:'PO-03은 익월 말 결제 조건입니다. 결제일은?',fn:'EOMONTH',tpl:'EOMONTH({0}, {1})',slots:[C('기준일'),O('개월')],opts:{1:['-1','0','1']},sol:['B4','1']}]},
+
+/* ---- 추가: 고급 ---- */
+{id:'SUMPRODUCT',level:'adv',name:'SUMPRODUCT',sig:'=SUMPRODUCT(범위1, 범위2)',desc:'행끼리 곱해서 한 번에 합계',tip:'수량×단가를 행마다 계산하는 보조 열 없이 바로 총액이 나옵니다. 두 범위의 행 개수가 같아야 하고, 순서는 바뀌어도 됩니다.',
+ sheet:'sp',tpl:'SUMPRODUCT({0}, {1})',slots:[R('범위1'),R('범위2')],swap:[0,1],
+ ev:(A,S)=>{const a=flat(S,A[0]),b=flat(S,A[1]);if(a.length!==b.length)return E('#VALUE!');return sum(a.map((v,i)=>(typeof v==='number'&&typeof b[i]==='number')?v*b[i]:0))},qs:[
+  ['네 품목 전체 매출(수량×단가) 합계는?',['B2:B5','C2:C5']],
+  ['네 품목 전체 운임(수량×운임) 합계는?',['B2:B5','D2:D5']],
+  ['볼트·너트 두 품목의 매출 합계는?',['B2:B3','C2:C3']],
+  ['와셔·스프링 두 품목의 운임 합계는?',['B4:B5','D4:D5']],
+  ['너트부터 스프링까지 세 품목의 매출 합계는?',['B3:B5','C3:C5']]]},
+{id:'MAXIFS',absRec:true,level:'adv',name:'MAXIFS·MINIFS',sig:'=MAXIFS(대상, 조건범위, 조건)',desc:'조건에 맞는 것 중 최대 / 최소',tip:'대상 범위가 맨 앞이고 조건 범위·조건이 뒤따릅니다. 엑셀 2019·M365부터 됩니다.',
+ sheet:'flow',tpl:'{0}({1}, {2}, {3})',slots:[O('함수'),R('대상 범위'),R('조건 범위'),O('조건')],opts:{0:['MAXIFS','MINIFS'],3:CR},
+ ev:(A,S)=>{const v=flat(S,A[1]),c=flat(S,A[2]);if(v.length!==c.length)return E('#VALUE!');const h=v.filter((x,i)=>typeof x==='number'&&crit(c[i],A[3]));return h.length?Math[A[0]==='MAXIFS'?'max':'min'](...h):0},qs:[
+  ['경산 창고 출고 중 1회 최대 수량은?',['MAXIFS','D2:D8','B2:B8','"경산"']],
+  ['대구 창고 출고 중 1회 최소 수량은?',['MINIFS','D2:D8','B2:B8','"대구"']],
+  ['볼트 출고 중 가장 적었던 수량은?',['MINIFS','D2:D8','C2:C8','"볼트"']],
+  ['9월 출고 중 가장 많았던 수량은?',['MAXIFS','D2:D8','A2:A8','"9월"']],
+  ['너트 출고 중 가장 많았던 수량은?',['MAXIFS','D2:D8','C2:C8','"너트"']]]},
+{id:'FILTER',level:'adv',name:'FILTER',sig:'=FILTER(범위, 조건)',desc:'조건에 맞는 행만 목록으로 뽑기',tip:'결과가 여러 칸으로 흘러내립니다(스필). 가져올 범위와 조건 범위의 행이 맞아야 하고, 조건은 범위 뒤에 ="서울" 처럼 붙입니다. M365·엑셀 2021부터 됩니다.',
+ sheet:'orders',tpl:'FILTER({0}, {1}{2})',slots:[R('가져올 범위'),R('조건 범위'),O('조건')],opts:{2:['="서울"','="지연"','="완료"','>=100','<100']},
+ ev:(A,S)=>{const rows=block(S,A[0]),c=flat(S,A[1]);if(rows.length!==c.length)return E('#VALUE!');const out=[];rows.forEach((r,i)=>{const t=condEval(c[i],A[2]);if(t===true)out.push(r.length===1?r[0]:r)});return out.length?out:E('#CALC!')},qs:[
+  ['서울로 나가는 오더번호만 뽑으면?',['A2:A8','B2:B8','="서울"']],
+  ['지연된 오더번호만 뽑으면?',['A2:A8','D2:D8','="지연"']],
+  ['수량 100개 이상 오더의 지역만 뽑으면?',['B2:B8','C2:C8','>=100']],
+  ['완료된 오더의 수량만 뽑으면?',['C2:C8','D2:D8','="완료"']],
+  ['수량 100개 미만 오더의 상태만 뽑으면?',['D2:D8','C2:C8','<100']]]},
+{id:'UNIQUE',level:'adv',name:'UNIQUE',sig:'=UNIQUE(범위)',desc:'중복 빼고 고유 목록 / 개수',tip:'COUNTA로 감싸면 고유 개수가 나옵니다. 거래 공급사 수, 품목 가짓수를 셀 때 피벗 없이 바로 됩니다. M365·엑셀 2021부터 됩니다.',
+ sheet:'uniq',ev:(A,S,P)=>{const u=[];flat(S,A[0]).map(v=>v===null?0:v).forEach(v=>{if(!u.some(x=>same(x,v)))u.push(v)});return P.fn==='COUNTA'?u.length:u},qs:[
+  {q:'10월에 거래한 공급사 목록(중복 제거)은?',fn:'UNIQUE',tpl:'UNIQUE({0})',slots:[R('범위')],sol:['B2:B8']},
+  {q:'입고된 품목 목록(중복 제거)은?',fn:'UNIQUE',tpl:'UNIQUE({0})',slots:[R('범위')],sol:['C2:C8']},
+  {q:'입고가 있었던 날짜 목록은?',fn:'UNIQUE',tpl:'UNIQUE({0})',slots:[R('범위')],sol:['A2:A8']},
+  {q:'거래한 공급사는 모두 몇 곳?',fn:'COUNTA',tpl:'COUNTA(UNIQUE({0}))',slots:[R('범위')],sol:['B2:B8']},
+  {q:'입고된 품목은 모두 몇 가지?',fn:'COUNTA',tpl:'COUNTA(UNIQUE({0}))',slots:[R('범위')],sol:['C2:C8']}]}
+];
+
+/* 문제 정규화 + 정답 미리 계산 */
+const argVals=(args,slots)=>args.map((a,i)=>slots[i].t==='choice'?pv(a):a);
+GROUPS.forEach(g=>{
+  if(g.kind==='key'){ g.list=g.items; return; }
+  g.S=g.sheet?sheetOf(SH[g.sheet]):null;
+  g.list=g.qs.map(x=>{
+    const P=Array.isArray(x)?{q:x[0],sol:x[1],opts:x[2]}:x;
+    P.slots=P.slots||g.slots; P.tpl=P.tpl||g.tpl; P.opts=Object.assign({},g.opts||{},P.opts||{});
+    P.S=P.sheet?sheetOf(SH[P.sheet]):g.S;
+    P.solA=P.sol.map((s,i)=>P.slots[i].t==='choice'?s:rg(s));
+    P.slots.forEach((s,i)=>{ if(s.t==='range'&&(s.abs||g.absRec)&&!P.solA[i].m) P.solA[i].m=1; });
+    P.exp=g.ev(argVals(P.solA,P.slots),P.S,P);
+    return P;
+  });
+});
+const GM=Object.fromEntries(GROUPS.map(g=>[g.id,g]));
+const TOTAL=GROUPS.reduce((n,g)=>n+g.list.length,0);
+
+/* ---------- 저장 ---------- */
+let store={solved:{},level:'basic'};
+try{ const s=JSON.parse(localStorage.getItem('xldrill-v1')); if(s&&s.solved) store=Object.assign(store,s); }catch(e){}
+const save=()=>{ try{ localStorage.setItem('xldrill-v1',JSON.stringify(store)); }catch(e){} };
+const solvedN=g=>g.list.filter((_,i)=>store.solved[g.id+':'+i]).length;
+
+/* ---------- 상태 ---------- */
+const app=document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+let st={view:'home',level:store.level||'basic',gid:null,qi:0,args:[],active:0,result:null,revealed:false,msg:'',mods:[],key:null};
+let drag=null, cellEls=[];
+const G=()=>GM[st.gid], P=()=>G().list[st.qi];
+function reset(){ Object.assign(st,{lastRef:null,args:[],active:0,result:null,revealed:false,msg:'',mods:[],key:null}); drag=null; }
+function render(){ if(st.view==='home') home(); else if(G().kind==='key') keyPlay(); else fnPlay(); }
+
+function fmt(v){
+  if(Array.isArray(v)) return v.map(x=>Array.isArray(x)?x.map(fmt).join(' / '):fmt(x)).join(', ');
+  if(isErr(v)) return v.e; if(v==null) return '0';
+  if(typeof v==='boolean') return v?'TRUE':'FALSE';
+  if(typeof v==='number') return String(Math.round(v*10000)/10000);
+  if(v==='') return '(빈 칸)'; return String(v);
+}
+function eqRes(a,b){ if(Array.isArray(a)||Array.isArray(b)) return Array.isArray(a)&&Array.isArray(b)&&fmt(a)===fmt(b); if(isErr(a)||isErr(b)) return isErr(a)&&isErr(b)&&a.e===b.e; if(typeof a==='number'&&typeof b==='number') return Math.abs(a-b)<1e-9; return String(a??'')===String(b??''); }
+
+/* ---------- 홈 ---------- */
+function home(){
+  const n=Object.keys(store.solved).length;
+  const gs=GROUPS.filter(g=>g.level===st.level);
+  app.innerHTML=`
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <div class="fbar" aria-hidden="true"><span class="nb">A1</span><span class="fxl">fx</span><span class="ft">=실무(단축키, 함수)</span></div>
+    <h1>엑셀 실무 드릴</h1>
+    <p class="sub">출고·재고·입고 데이터로 푸는 ${TOTAL}문제. 함수는 표를 직접 끌어서 범위를 잡고, 단축키는 키를 조합해서 맞힙니다.</p>
+    <div class="meter"><div class="bar"><i style="width:${Math.round(n/TOTAL*100)}%"></i></div><span>${n} / ${TOTAL} 해결</span></div>
+  </header>
+  <nav class="tabs" role="tablist">${LEVELS.map(l=>{const gg=GROUPS.filter(g=>g.level===l.id);const a=gg.reduce((x,g)=>x+solvedN(g),0),b=gg.reduce((x,g)=>x+g.list.length,0);
+    return `<button class="tab" role="tab" aria-selected="${l.id===st.level}" data-tab="${l.id}">${l.name}<small>${a}/${b}</small></button>`}).join('')}</nav>
+  <section class="list">${gs.map(g=>`<button class="item" data-g="${g.id}">
+      <div><b>${esc(g.name)}</b><span class="sig">${esc(g.sig)}</span></div>
+      <div class="dots" aria-label="${solvedN(g)}/${g.list.length} 해결">${g.list.map((_,i)=>`<i class="${store.solved[g.id+':'+i]?'on':''}"></i>`).join('')}</div>
+      <p>${esc(g.desc)}</p></button>`).join('')}</section>
+  <div class="foot"><span>${st.level==='key'?'Windows 엑셀 기준 단축키':'기록은 이 기기 브라우저에만 남습니다'}</span><button class="link" id="reset">풀이 기록 지우기</button></div>`;
+}
+
+/* ---------- 함수 문제 ---------- */
+function topBar(){
+  const g=G();
+  return `<div class="top"><button class="back" id="back">← 목록</button><span class="gname">${esc(g.name)}</span><span class="cnt">${st.qi+1} / ${g.list.length}</span></div>
+  <div class="qnav">${g.list.map((_,i)=>`<button data-jump="${i}" class="${i===st.qi?'on':''} ${store.solved[g.id+':'+i]?'done':''}" aria-label="${i+1}번 문제">${i+1}</button>`).join('')}</div>`;
+}
+function colorOf(p,i){ let k=0; for(let j=0;j<i;j++) if(p.slots[j].t!=='choice') k++; return `var(--r${k%4+1})`; }
+function argText(p,i,a){ return p.slots[i].t==='choice'?a:refStr(a); }
+function formulaPlain(p,args){ return '='+(p.fn&&!p.tpl.startsWith(p.fn)?'':'')+p.tpl.replace(/\{(\d)\}/g,(_,i)=>argText(p,+i,args[+i])); }
+
+function fnPlay(){
+  const g=G(),p=P(); const cols=p.S[0].length;
+  app.innerHTML=`${topBar()}
+  <p class="q">${esc(p.q)}</p>
+  <div class="formula"><span class="fx">fx</span><div class="expr" id="expr"></div></div>
+  <div class="helper" id="helper"></div>
+  <div class="actions">${p.slots.some(s=>s.t!=='choice')?'<button class="ghost f4" id="f4" title="참조 고정 전환">F4 $고정</button>':''}<button class="ghost" id="clear">지우기</button><button class="primary" id="go">확인 <kbd>Enter</kbd></button></div>
+  <div class="sheetwrap"><div class="sheet" id="sheet" style="grid-template-columns:28px repeat(${cols},minmax(max-content,1fr))"></div></div>
+  <div class="tip">${g.tip}</div>`;
+  buildSheet(); drawAll();
+}
+function buildSheet(){
+  const g=G(),S=P().S,cols=S[0].length,rows=S.length+1;
+  let h='<div class="c h"></div>'; for(let c=0;c<cols;c++) h+=`<div class="c h">${L(c)}</div>`;
+  for(let r=0;r<rows;r++){ h+=`<div class="c h rn">${r+1}</div>`;
+    for(let c=0;c<cols;c++){ const v=S[r]?S[r][c]:null; h+=`<div class="c d ${typeof v==='number'?'num':''} ${r===0?'th':''}" data-r="${r}" data-c="${c}">${v==null?'':esc(v)}</div>`; } }
+  const el=document.getElementById('sheet'); el.innerHTML=h;
+  cellEls=[]; el.querySelectorAll('.d').forEach(d=>{ const r=+d.dataset.r,c=+d.dataset.c; (cellEls[r]=cellEls[r]||[])[c]=d; });
+  el.addEventListener('pointerdown',onDown); el.addEventListener('pointermove',onMove);
+  el.addEventListener('pointerup',onUp); el.addEventListener('pointercancel',onUp);
+}
+function onDown(e){
+  const d=e.target.closest('.d'); if(!d) return; e.preventDefault();
+  const p=P(); let s=p.slots[st.active];
+  if(!s||s.t==='choice'){ let j=p.slots.findIndex((x,i)=>x.t!=='choice'&&st.args[i]==null); if(j<0) j=p.slots.findIndex(x=>x.t!=='choice'); if(j<0) return; st.active=j; }
+  if(st.result) st.result=null; st.msg='';
+  const r=+d.dataset.r,c=+d.dataset.c; drag={r1:r,c1:c,r2:r,c2:c};
+  try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+  ['expr','helper'].forEach(id=>{ const el=document.getElementById(id); el.style.minHeight=el.offsetHeight+'px'; });
+  keepSheet(drawAll);
+}
+/* 드래그 도중 위쪽 레이아웃이 바뀌어도 표가 손가락 아래에서 밀리지 않게 */
+function keepSheet(fn){
+  const el=document.getElementById('sheet'); const y0=el.getBoundingClientRect().top; fn();
+  const y1=el.getBoundingClientRect().top; if(Math.abs(y1-y0)>0.5) window.scrollBy(0,y1-y0);
+}
+function onMove(e){
+  if(!drag) return; const el=document.elementFromPoint(e.clientX,e.clientY); const d=el&&el.closest&&el.closest('.d'); if(!d) return;
+  const r=+d.dataset.r,c=+d.dataset.c; if(r===drag.r2&&c===drag.c2) return;
+  if(P().slots[st.active].t==='cell') drag={r1:r,c1:c,r2:r,c2:c}; else { drag.r2=r; drag.c2=c; }
+  keepSheet(drawExpr); paint();
+}
+function onUp(){
+  if(!drag) return; st.args[st.active]=norm(drag); st.lastRef=st.active; drag=null; advance();
+  ['expr','helper'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.minHeight=''; });
+  drawAll();
+}
+function f4Target(){ const p=P(),i=st.active; if(p.slots[i]&&p.slots[i].t!=='choice'&&st.args[i]) return i; return (st.lastRef!=null&&st.args[st.lastRef])?st.lastRef:-1; }
+function pressF4(){ const i=f4Target(); if(i<0){ st.msg='먼저 표에서 범위나 셀을 고르세요. 그다음 F4를 누르면 $가 붙습니다.'; drawAll(); return; }
+  const a=st.args[i]; a.m=((a.m||0)+1)%4; st.result=null; st.msg=''; drawAll(); }
+function advance(){
+  const n=P().slots.length; for(let k=1;k<=n;k++){ const i=(st.active+k)%n; if(st.args[i]==null){ st.active=i; return; } }
+}
+function drawAll(){ drawExpr(); drawHelper(); paint(); const go=document.getElementById('go'); if(go) go.setAttribute('aria-disabled',P().slots.some((_,i)=>st.args[i]==null)?'true':'false'); }
+function drawExpr(){
+  const p=P();
+  const html=p.tpl.split(/(\{\d\})/).map(part=>{
+    const m=/^\{(\d)\}$/.exec(part); if(!m) return part?`<span class="lit">${esc(part)}</span>`:'';
+    const i=+m[1],s=p.slots[i]; let a=st.args[i]; if(drag&&i===st.active) a=norm(drag);
+    const filled=a!=null; const txt=filled?argText(p,i,a):s.n;
+    return `<button class="slot ${s.t} ${filled?'':'empty'} ${i===st.active&&!st.result?'on':''}" data-slot="${i}" style="--hl:${s.t==='choice'?'var(--accent)':colorOf(p,i)}">${esc(txt)}</button>`;
+  }).join('');
+  document.getElementById('expr').innerHTML='<span class="lit">=</span>'+html;
+}
+function drawHelper(){
+  const p=P(),h=document.getElementById('helper'),r=st.result; let out='';
+  if(r){
+    const mine=formulaPlain(p,st.args), model=formulaPlain(p,p.solA);
+    const last=st.qi===G().list.length-1;
+    const nextBtn=`<button class="primary" id="next">${last?'목록으로':'다음 문제 →'}</button>`;
+    const g=G(), isRef=g.kind==='ref';
+    const useArgs=r.shown?p.solA:st.args, vals=r.shown?p.exp:r.res;
+    const ctab=isRef?copyTable(p,useArgs,vals):'';
+    const resLine=isRef?'':`<p>결과 <code>${esc(fmt(r.shown?p.exp:r.res))}</code></p>`;
+    let note='';
+    if((r.ok||r.shown)&&isRef) note=`<p class="why">${p.why}</p>`;
+    else if((r.ok||r.shown)&&p.slots.some(s=>s.abs)) note=`<p class="why">표 범위를 $로 고정해 두면 이 수식을 아래 행으로 복사해도 범위가 밀리지 않습니다. 찾을 값은 행마다 달라져야 하니 상대참조로 둡니다.</p>`;
+    else if(r.ok&&g.absRec&&p.slots.some((s,i)=>s.t==='range'&&!(st.args[i].m===1||st.args[i].m===2))) note=`<p class="why">실무 팁: 조건을 셀 참조로 바꿔 아래로 복사하는 경우가 많아서 범위에 $를 붙여 두는 게 안전합니다. 안 붙이면 복사할 때 조건 범위와 합계 범위가 같이 밀려서 숫자가 조용히 틀어집니다.</p>`;
+    if(r.shown) out=`<div class="fb show"><span class="h">정답 수식</span><p><code>${esc(model)}</code></p>${resLine}${ctab}${note}<div class="row">${nextBtn}</div></div>`;
+    else if(r.ok) out=`<div class="fb ok"><span class="h">정답입니다</span>${resLine}${mine!==model?`<p>모범 수식 <code>${esc(model)}</code></p>`:''}${ctab}${note}<div class="row">${nextBtn}</div></div>`;
+    else { const s=r.bad>=0?p.slots[r.bad]:null;
+      let why=s?`<b>${esc(s.n)}</b> 부분이 정답과 달라요. ${s.t==='choice'?'다른 선택지를 골라보세요.':s.t==='cell'?'가리키는 셀을 다시 확인하세요.':'범위의 위치나 크기를 다시 확인하세요.'}`:'수식 결과가 정답과 다릅니다.';
+      if(r.why==='abs') why=`결과는 맞는데 <b>${esc(s.n)}</b>에 $가 없어요. 이 수식을 아래 행으로 복사하면 범위도 같이 한 칸씩 내려가서 위쪽 데이터가 빠지고 #N/A가 납니다. 범위를 누르고 <b>F4 $고정</b>으로 고정하세요.`;
+      if(isRef) why='수식을 복사한 칸 중 결과가 틀어진 곳이 있어요(빨간 줄). 그 칸의 수식에서 참조가 어디로 밀렸는지 보고 $ 위치를 다시 골라보세요.';
+      out=`<div class="fb bad"><span class="h">다시 해볼까요</span><p>${why}</p>${isRef?ctab:`<p>지금 결과 <code>${esc(fmt(r.res))}</code></p>`}<div class="row"><button class="ghost" id="retry">고쳐보기</button><button class="ghost" id="reveal">정답 보기</button></div></div>`; }
+  } else {
+    const s=p.slots[st.active];
+    if(st.msg) out+=`<p class="msg">${esc(st.msg)}</p>`;
+    if(s&&s.t==='choice'){ const o=p.opts[st.active]||[]; out+=`<div class="chips">${o.map((x,k)=>`<button class="chip ${st.args[st.active]===x?'sel':''}" data-o="${k}">${esc(x)}</button>`).join('')}</div>`; }
+    else if(s){ out+=`<p class="hint" style="--hl:${colorOf(p,st.active)}">${s.t==='cell'?'표에서 셀을 눌러':'표를 손가락으로 끌어서'} <b>${esc(s.n)}</b> 지정</p>`; }
+  }
+  h.innerHTML=out;
+  if(G().kind==='ref') fillCopy(r);
+}
+function copyTable(p,args,vals){
+  const f=p.tpl.replace(/\{(\d)\}/g,(_,i)=>args[+i]); const o=rg(p.at);
+  const rows=cellsOf(rg(p.copy)).map(([r,c],k)=>{ const bad=!eqRes(vals[k],p.exp[k]);
+    return `<tr class="${bad?'x':''}"><td>${L(c)}${r+1}</td><td>=${esc(shiftF(f,r-o.r1,c-o.c1))}</td><td>${esc(fmt(vals[k]))}</td></tr>`; }).join('');
+  return `<div class="ctabw"><table class="ctab"><tr><th>칸</th><th>복사된 수식</th><th>결과</th></tr>${rows}</table></div>`;
+}
+function fillCopy(r){
+  const p=P(), S=p.S, vals=r?(r.shown?p.exp:r.res):null;
+  cellsOf(rg(p.copy)).forEach(([rr,cc],k)=>{ const d=cellEls[rr]&&cellEls[rr][cc]; if(!d) return;
+    d.classList.remove('fillv','errv');
+    if(vals){ d.textContent=fmt(vals[k]); d.classList.add('fillv'); if(!eqRes(vals[k],p.exp[k])) d.classList.add('errv'); }
+    else { const v=S[rr]?S[rr][cc]:null; d.textContent=v==null?'':v; } });
+}
+function paint(){
+  const p=P();
+  cellEls.flat().forEach(d=>{ d.classList.remove('hl'); d.style.boxShadow=''; d.style.removeProperty('--hl'); });
+  const layers=[]; p.slots.forEach((s,i)=>{ if(s.t!=='choice'&&st.args[i]&&!(drag&&i===st.active)) layers.push([st.args[i],colorOf(p,i)]); });
+  if(drag) layers.push([norm(drag),colorOf(p,st.active)]);
+  if(p.copy) layers.unshift([rg(p.copy),'var(--accent)']);
+  layers.forEach(([g,col])=>{ for(let r=g.r1;r<=g.r2;r++) for(let c=g.c1;c<=g.c2;c++){ const d=cellEls[r]&&cellEls[r][c]; if(!d) continue;
+    d.classList.add('hl'); d.style.setProperty('--hl',col); const sh=[];
+    if(r===g.r1) sh.push('inset 0 2px 0 var(--hl)'); if(r===g.r2) sh.push('inset 0 -2px 0 var(--hl)');
+    if(c===g.c1) sh.push('inset 2px 0 0 var(--hl)'); if(c===g.c2) sh.push('inset -2px 0 0 var(--hl)');
+    d.style.boxShadow=sh.join(','); } });
+}
+function check(){
+  const g=G(),p=P(),sl=p.slots,a=st.args;
+  const miss=sl.findIndex((_,i)=>a[i]==null);
+  if(miss>=0){ st.active=miss; st.msg=`아직 비어 있는 칸: ${sl[miss].n}`; drawAll(); return; }
+  let r=judge(g,p,a);
+  if(!r.ok&&g.swap){ const b=a.slice(),[i,j]=g.swap; [b[i],b[j]]=[b[j],b[i]]; const r2=judge(g,p,b); if(r2.ok) r={ok:true,res:r.res,bad:-1,why:''}; }
+  st.result=r; st.msg='';
+  if(r.ok&&!st.revealed){ store.solved[g.id+':'+st.qi]=1; save(); }
+  drawAll(); updateNav();
+}
+/* 정답보다 넓게 잡은 범위는 머리글 행이나 빈 행처럼 숫자가 없는 행만 허용, 열 확장은 조회 표(wide)만 */
+function rangeOk(S,u,v,wide){
+  if(!covers(u,v)) return false;
+  if(!wide&&(u.c1!==v.c1||u.c2!==v.c2)) return false;
+  for(let r=u.r1;r<=u.r2;r++) for(let c=u.c1;c<=u.c2;c++){
+    const inRows=r>=v.r1&&r<=v.r2; if(inRows) continue; if(!(r===0||r>=S.length)) return false;
+    const x=S[r]&&S[r][c]!=null?S[r][c]:null; if(typeof x==='number') return false; }
+  return true;
+}
+function judge(g,p,a){
+  const sl=p.slots;
+  const res=g.ev(argVals(a,sl),p.S,p); let bad=-1;
+  const inPair=new Set((g.pairs||[]).flat());
+  for(let i=0;i<sl.length&&bad<0;i++){ if(inPair.has(i)) continue; const s=sl[i],u=a[i],v=p.solA[i];
+    if(s.t==='choice'&&u!==v){ if(!g.loose) bad=i; } else if(s.t==='cell'&&!sameRef(u,v)) bad=i; else if(s.t==='range'&&!rangeOk(p.S,u,v,s.wide)) bad=i; }
+  if(bad<0&&g.pairs){ const pool=g.pairs.map(([x,y])=>({r:p.solA[x],c:p.solA[y]}));
+    for(const [x,y] of g.pairs){ const ur=a[x],uc=a[y];
+      const k=pool.findIndex(o=>o.c===uc&&ur.c1===o.r.c1&&ur.c2===o.r.c2&&covers(ur,o.r));
+      if(k<0){ bad=pool.some(o=>o.c===uc)?x:y; break; } pool.splice(k,1); } }
+  const okRes=eqRes(res,p.exp); let ok=bad<0&&okRes;
+  if(!ok&&bad<0){ bad=sl.findIndex((s,i)=>(s.t==='range'&&!sameRef(a[i],p.solA[i]))||(g.loose&&s.t==='choice'&&a[i]!==p.solA[i])); if(bad<0) bad=-2; }
+  let why='';
+  if(ok){ const k=sl.findIndex((s,i)=>s.abs&&!(a[i].m===1||a[i].m===2)); if(k>=0){ ok=false; bad=k; why='abs'; } }
+  return {ok,res,bad,why};
+}
+function updateNav(){ document.querySelectorAll('.qnav button').forEach((b,i)=>b.classList.toggle('done',!!store.solved[st.gid+':'+i])); }
+function reveal(){ const p=P(); st.args=p.solA.map(x=>x&&typeof x==='object'?{...x}:x); st.revealed=true; st.result={ok:true,shown:true}; drawAll(); }
+function next(){ if(st.qi<G().list.length-1){ st.qi++; reset(); render(); } else { st.view='home'; render(); } window.scrollTo(0,0); }
+
+/* ---------- 단축키 문제 ---------- */
+function keyPlay(){
+  const p=P();
+  app.innerHTML=`${topBar()}
+  <p class="q">${esc(p.q)}</p>
+  <div class="combo" id="combo"></div>
+  <div class="helper" id="helper"></div>
+  <span class="lbl">보조키</span>
+  <div class="mods">${MODS.map(m=>`<button class="mod" data-m="${m}" aria-pressed="false">${m}</button>`).join('')}</div>
+  <span class="lbl">키</span>
+  <div class="keys">${KEYS.map(k=>`<button class="key" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>
+  <div class="actions"><button class="ghost" id="clear">지우기</button><button class="primary" id="go">확인</button></div>
+  <p class="tip">PC라면 실제 키보드로 눌러도 바로 채점됩니다. Ctrl+T처럼 브라우저가 먼저 가로채는 조합은 화면 버튼으로 고르세요. 방향키는 ↑↓←→ 중 아무거나 같은 뜻으로 칩니다.</p>`;
+  drawKey();
+}
+const caps=arr=>arr.map(k=>`<span class="kc">${esc(k)}</span>`).join('<span class="plus">+</span>');
+function drawKey(){
+  const p=P(),r=st.result; const sel=[...MODS.filter(m=>st.mods.includes(m)),...(st.key?[st.key]:[])];
+  document.getElementById('combo').innerHTML=sel.length?caps(sel):'<span class="ph">보조키와 키를 골라 조합을 만드세요</span>';
+  document.querySelectorAll('.mod').forEach(b=>{ const on=st.mods.includes(b.dataset.m); b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
+  document.querySelectorAll('.key').forEach(b=>b.classList.toggle('on',b.dataset.k===st.key));
+  const last=st.qi===G().list.length-1, nextBtn=`<button class="primary" id="next">${last?'목록으로':'다음 문제 →'}</button>`;
+  let out='';
+  if(st.msg) out=`<p class="msg">${esc(st.msg)}</p>`;
+  if(r){ if(r.ok) out=`<div class="fb ${r.shown?'show':'ok'}"><span class="h">${r.shown?'정답':'정답입니다'}</span><div class="row">${caps(p.k)}</div><p>${esc(p.w)}</p><div class="row">${nextBtn}</div></div>`;
+    else out=`<div class="fb bad"><span class="h">다른 조합이에요</span><p>${r.hint}</p><div class="row"><button class="ghost" id="retry">다시 고르기</button><button class="ghost" id="reveal">정답 보기</button></div></div>`; }
+  document.getElementById('helper').innerHTML=out;
+}
+function keyCheck(){
+  const p=P(); if(!st.key){ st.msg='메인 키를 하나 골라주세요.'; drawKey(); return; }
+  const wm=p.k.filter(k=>MODS.includes(k)), wk=p.k.find(k=>!MODS.includes(k));
+  const modOk=wm.length===st.mods.length&&wm.every(m=>st.mods.includes(m)), keyOk=st.key===wk;
+  const ok=modOk&&keyOk;
+  st.result={ok,hint:keyOk?'키는 맞았어요. 보조키 조합을 다시 생각해보세요.':modOk?'보조키는 맞았어요. 함께 누를 키가 달라요.':'보조키와 키 둘 다 다시 골라보세요.'}; st.msg='';
+  if(ok&&!st.revealed){ store.solved[st.gid+':'+st.qi]=1; save(); }
+  drawKey(); updateNav();
+}
+const CODE={ArrowUp:'방향키',ArrowDown:'방향키',ArrowLeft:'방향키',ArrowRight:'방향키',Home:'Home',Space:'Space',Enter:'Enter',NumpadEnter:'Enter',F2:'F2',F4:'F4',Semicolon:';',Equal:'=',Digit1:'1',KeyC:'C',KeyD:'D',KeyG:'G',KeyL:'L',KeyT:'T',KeyV:'V',KeyZ:'Z'};
+
+/* ---------- 이벤트 ---------- */
+app.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t) return; const d=t.dataset;
+  if(d.tab){ st.level=d.tab; store.level=d.tab; save(); home(); return; }
+  if(d.g){ st.gid=d.g; st.qi=0; st.view='play'; reset(); render(); window.scrollTo(0,0); return; }
+  if(t.id==='back'){ st.view='home'; render(); window.scrollTo(0,0); return; }
+  if(d.jump!=null){ st.qi=+d.jump; reset(); render(); return; }
+  if(t.id==='reset'){ if(t.classList.contains('armed')){ store.solved={}; save(); home(); } else { t.classList.add('armed'); t.textContent='한 번 더 누르면 지워집니다'; } return; }
+  if(t.id==='next'){ next(); return; }
+  const isKey=G()&&G().kind==='key';
+  if(isKey){
+    if(d.m){ st.mods=st.mods.includes(d.m)?st.mods.filter(x=>x!==d.m):[...st.mods,d.m]; st.result=null; st.msg=''; drawKey(); return; }
+    if(d.k!=null){ st.key=st.key===d.k?null:d.k; st.result=null; st.msg=''; drawKey(); return; }
+    if(t.id==='clear'||t.id==='retry'){ st.mods=[]; st.key=null; st.result=null; st.msg=''; drawKey(); return; }
+    if(t.id==='go'){ keyCheck(); return; }
+    if(t.id==='reveal'){ const p=P(); st.mods=p.k.filter(k=>MODS.includes(k)); st.key=p.k.find(k=>!MODS.includes(k)); st.revealed=true; st.result={ok:true,shown:true}; drawKey(); return; }
+    return;
+  }
+  if(d.slot!=null){ st.active=+d.slot; st.result=null; st.msg=''; drawAll(); return; }
+  if(d.o!=null){ const p=P(); st.args[st.active]=p.opts[st.active][+d.o]; advance(); st.msg=''; drawAll(); return; }
+  if(t.id==='clear'){ st.args=[]; st.active=0; st.result=null; st.msg=''; drawAll(); return; }
+  if(t.id==='retry'){ const b=st.result&&st.result.bad; st.result=null; if(b>=0) st.active=b; drawAll(); return; }
+  if(t.id==='go'){ check(); return; }
+  if(t.id==='f4'){ pressF4(); return; }
+  if(t.id==='reveal'){ reveal(); return; }
+});
+document.addEventListener('keydown',e=>{
+  if(st.view!=='play') return; const g=G();
+  if(g.kind==='key'){
+    const plain=!e.ctrlKey&&!e.altKey&&!e.shiftKey&&!e.metaKey;
+    if(e.code==='Enter'&&plain&&st.result&&st.result.ok){ e.preventDefault(); next(); return; }
+    const k=CODE[e.code]; if(!k) return; e.preventDefault();
+    if(st.result&&st.result.ok) return;
+    st.mods=MODS.filter(m=>m==='Ctrl'?(e.ctrlKey||e.metaKey):m==='Shift'?e.shiftKey:e.altKey); st.key=k; keyCheck();
+  } else if(e.key==='F4'){ e.preventDefault(); pressF4();
+  } else if(e.key==='Enter'){
+    e.preventDefault(); if(st.result&&st.result.ok) next(); else check();
+  }
+});
+render();
+</script>
+
+<script>
+(function(){
+  var _r = render;
+  render = function(){
+    _r();
+    if (st.view === 'play' && location.hash !== '#play') location.hash = 'play';
+    if (st.view === 'home' && location.hash === '#play') history.back();
+  };
+  window.addEventListener('hashchange', function(){
+    if (location.hash !== '#play' && st.view === 'play') { st.view = 'home'; _r(); window.scrollTo(0,0); }
+  });
+})();
+</script>
+<script>if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script></body></html>
