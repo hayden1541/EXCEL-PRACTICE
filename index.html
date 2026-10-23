@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="theme-color" content="#16754A" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#19201C" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="실무엑셀"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="물류 현장 데이터로 푸는 엑셀 단축키·함수·참조 155문제. 표를 직접 끌어서 범위를 잡고 F4로 $를 붙여보는 연습 웹앱."><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>엑셀 실무 드릴</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="theme-color" content="#16754A" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#19201C" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="실무엑셀"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="물류 현장 데이터로 푸는 엑셀 단축키·함수·참조·피벗·실무 기능 205문제와 개념 정리. 표를 직접 끌어서 범위를 잡고 F4로 $를 붙여보는 연습 웹앱."><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>엑셀 실무 드릴</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,8 @@ h1{font-size:30px;line-height:1.2;letter-spacing:-0.02em;margin:6px 0 0;text-wra
 
 /* sheet tabs */
 .tabs{display:flex;border-bottom:1px solid var(--line)}
-.tab{flex:1;background:transparent;border:0;border-bottom:3px solid transparent;padding:10px 0 8px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.3}
+.tab{flex:1;min-width:0;background:transparent;border:0;border-bottom:3px solid transparent;padding:10px 0 8px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.3}
+.tab{font-size:14px}
 .tab small{font-size:11px;font-variant-numeric:tabular-nums}
 .tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface);font-weight:700}
 
@@ -147,7 +148,66 @@ h1{font-size:30px;line-height:1.2;letter-spacing:-0.02em;margin:6px 0 0;text-wra
 .mod.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .key.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 .lbl{font-size:12px;color:var(--muted);margin:2px 0 -6px;letter-spacing:.04em}
-@media (prefers-reduced-motion: no-preference){ .chip,.mod,.key,.slot{transition:background .12s, border-color .12s} }
+/* quiz */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:11px 12px;font-size:14.5px;line-height:1.5}
+.opt .on{font-family:var(--mono);font-weight:600;color:var(--muted);flex:none;width:16px}
+.opt span:last-child{min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.opt.sel{border-color:var(--accent)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .on{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .on{color:var(--bad)}
+/* pivot */
+.pfields{display:flex;flex-wrap:wrap;gap:8px}
+.pf{font-size:14px;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.pf.used{color:var(--muted)}
+.pf.sel{border-color:var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600}
+.pareas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.parea{border:1px dashed var(--line);border-radius:8px;background:var(--surface);padding:6px;min-height:76px;display:flex;flex-direction:column;gap:6px;cursor:pointer;min-width:0}
+.parea.armed{border-color:var(--accent);border-style:solid;background:var(--accent-soft)}
+.pah{background:none;border:0;padding:2px 2px;text-align:left;font-size:12px;color:var(--muted);letter-spacing:.04em;display:flex;justify-content:space-between}
+.parea.armed .pah{color:var(--accent);font-weight:600}
+.pchip{font-size:13px;text-align:left;padding:5px 8px;border-radius:5px;border:1px solid var(--line);background:var(--hdr);display:flex;justify-content:space-between;gap:6px;min-width:0}
+.pchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip i{font-style:normal;color:var(--muted)}
+.pset{display:flex;flex-direction:column;gap:8px}
+.pset .lbl{margin:0}
+.src summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:4px 0}
+.src[open] summary{margin-bottom:6px}
+.pout{min-height:60px}
+.pout .ph{color:var(--muted);font-size:13.5px;padding:14px 12px}
+.ctab td.n{text-align:right;font-variant-numeric:tabular-nums}
+.ctab tr.tot td{font-weight:700;border-top:1px solid var(--line)}
+/* notes */
+.ncard{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.ncard b{font-size:15px}
+.ncard p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.ncard .arr{font-family:var(--mono);color:var(--accent);font-weight:600;flex:none}
+.notes h1{font-size:26px;margin:0}
+.notes h2{font-size:19px;margin:0;padding-top:6px;scroll-margin-top:12px}
+.notes h3{font-size:15px;margin:4px 0 0}
+.notes section{display:flex;flex-direction:column;gap:10px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.notes p,.notes li{font-size:14.5px;line-height:1.65;margin:0;max-width:65ch}
+.notes ul,.notes ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.notes code{font-family:var(--mono);font-size:13px;background:var(--hdr);border-radius:4px;padding:1px 5px;word-break:break-all}
+.notes .ctab td{white-space:normal;vertical-align:top;line-height:1.5}
+.notes .ctab td:first-child{white-space:nowrap}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc button{font-size:13px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.fnl{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden}
+.fni{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px;scroll-margin-top:12px}
+.fni:last-child{border-bottom:0}
+.fni.hit{background:var(--accent-soft)}
+.fni .t{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.fni .t b{font-family:var(--mono)}
+.fni .t span{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.fni p{font-size:13.5px;color:var(--muted);margin:0}
+.fni .tp{font-size:13.5px;color:var(--ink)}
+.notes .ctab td,.pout .ctab td,.src .ctab td,.notes .ctab th,.pout .ctab th{font-family:var(--sans)}
+.pout .ctab td.n,.src .ctab td.n{font-family:var(--mono)}
+.nlink{display:block;margin-top:8px;padding:0;color:var(--accent);text-decoration:none;font-weight:600;font-size:13px}
+@media (prefers-reduced-motion: no-preference){ .chip,.mod,.key,.slot,.opt,.pf,.parea{transition:background .12s, border-color .12s} }
 </style>
 
 <style>body{margin:0;-webkit-tap-highlight-color:transparent}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}button{touch-action:manipulation}</style></head><body><div id="app"></div>
@@ -300,6 +360,19 @@ ref5:`단가/수량|10|20|30
 100|||
 250|||
 400|||`,
+pv:`주문번호|월|창고|품목|수량|금액
+O-01|9월|경산|볼트|120|42000
+O-02|9월|대구|너트|80|16800
+O-03|9월|경산|와셔|200|19000
+O-04|9월|칠곡|볼트|60|21000
+O-05|10월|경산|볼트|150|52500
+O-06|10월|대구|볼트|90|31500
+O-07|10월|대구|와셔|110|10450
+O-08|10월|칠곡|너트|70|14700
+O-09|10월|경산|너트|130|27300
+O-10|11월|칠곡|와셔|180|17100
+O-11|11월|대구|볼트|100|35000
+O-12|11월|경산|너트|40|8400`,
 uniq:`입고일|공급사|품목
 10/01|대성|볼트
 10/01|한빛|너트
@@ -409,7 +482,7 @@ const iq=(q,cell,cond,t,f,co)=>({q,sol:[cell,cond,t,f],opts:{1:co,2:[t,f].sort()
 const tq=(fn,q,sol,opts)=>({q,fn,sol,opts,tpl:fn==='MID'?'MID({0}, {1}, {2})':fn+'({0}, {1})',slots:fn==='MID'?[C('셀'),O('시작 위치'),O('글자 수')]:[C('셀'),O('글자 수')]});
 const CR=['"9월"','"10월"','"경산"','"대구"','"볼트"','"너트"'];
 
-const LEVELS=[{id:'key',name:'단축키'},{id:'basic',name:'기초'},{id:'mid',name:'중급'},{id:'adv',name:'고급'}];
+const LEVELS=[{id:'key',name:'단축키'},{id:'basic',name:'기초'},{id:'mid',name:'중급'},{id:'adv',name:'고급'},{id:'prac',name:'실무'},{id:'concept',name:'개념'}];
 const MODS=['Ctrl','Shift','Alt'];
 const KEYS=['방향키','Home','Space','Enter','F2','F4',';','=','1','C','D','G','L','T','V','Z'];
 
@@ -433,7 +506,7 @@ const GROUPS=[
   {q:'데이터 범위를 표(Table)로 바꾸기',k:['Ctrl','T'],w:'표로 만들어 두면 행을 추가해도 수식과 피벗 범위가 따라 늘어납니다.'},
   {q:'복사한 수식 결과를 값만 붙여넣으려고 "선택하여 붙여넣기" 창 열기',k:['Ctrl','Alt','V'],w:'창이 뜨면 V, Enter. 보고서를 넘기기 전에 수식 연결을 끊을 때 거의 매번 씁니다.'}]},
 
-{id:'REF',level:'basic',kind:'ref',loose:true,name:'참조 $',sig:'A1 · $A$1 · A$1 · $A1',desc:'상대·절대·혼합참조, 수식 복사할 때 어디를 고정할지',tip:'<table class="reft"><tr><td>A1</td><td>상대참조. 복사하면 행·열이 같이 움직임</td></tr><tr><td>$A$1</td><td>절대참조. 어디로 복사해도 그 칸 고정</td></tr><tr><td>A$1</td><td>행만 고정. 아래로 복사해도 1행 그대로</td></tr><tr><td>$A1</td><td>열만 고정. 옆으로 복사해도 A열 그대로</td></tr></table>$는 바로 뒤에 붙은 것(열 문자 또는 행 번호)을 고정합니다. 수식 입력 중 F4를 누를 때마다 A1 → $A$1 → A$1 → $A1 순서로 바뀝니다. 다른 함수 문제에서도 범위를 고른 뒤 <b>F4 $고정</b> 버튼으로 $를 붙일 수 있습니다.',
+{id:'REF',level:'basic',kind:'ref',loose:true,note:'note-ref',name:'참조 $',sig:'A1 · $A$1 · A$1 · $A1',desc:'상대·절대·혼합참조, 수식 복사할 때 어디를 고정할지',tip:'<table class="reft"><tr><td>A1</td><td>상대참조. 복사하면 행·열이 같이 움직임</td></tr><tr><td>$A$1</td><td>절대참조. 어디로 복사해도 그 칸 고정</td></tr><tr><td>A$1</td><td>행만 고정. 아래로 복사해도 1행 그대로</td></tr><tr><td>$A1</td><td>열만 고정. 옆으로 복사해도 A열 그대로</td></tr></table>$는 바로 뒤에 붙은 것(열 문자 또는 행 번호)을 고정합니다. 수식 입력 중 F4를 누를 때마다 A1 → $A$1 → A$1 → $A1 순서로 바뀝니다. 다른 함수 문제에서도 범위를 고른 뒤 <b>F4 $고정</b> 버튼으로 $를 붙일 수 있습니다.',
  ev:(A,S,P)=>{const f=P.tpl.replace(/\{(\d)\}/g,(_,i)=>A[+i]);const o=rg(P.at);return cellsOf(rg(P.copy)).map(([r,c])=>evalF(shiftF(f,r-o.r1,c-o.c1),S))},qs:[
   {q:'C2에 금액(수량×단가)을 넣고 C6까지 아래로 복사합니다. 단가는 E2 한 칸뿐이에요.',sheet:'ref1',at:'C2',copy:'C2:C6',tpl:'{0}*{1}',slots:[O('수량'),O('단가')],opts:{0:['B2','$B$2'],1:['E2','$E$2','E$2','$E2']},sol:['B2','$E$2'],
    why:'단가 E2를 상대참조로 두면 아래로 복사할 때 E3, E4…로 따라 내려가 빈 칸을 곱하게 되고 금액이 0이 됩니다. $E$2로 고정하면 모든 행이 같은 단가를 봅니다. 수량 B2는 행마다 달라야 하니 상대참조로 둡니다. 아래로만 복사한다면 행만 고정한 E$2도 결과는 같습니다.'},
@@ -662,13 +735,259 @@ const GROUPS=[
   {q:'입고된 품목 목록(중복 제거)은?',fn:'UNIQUE',tpl:'UNIQUE({0})',slots:[R('범위')],sol:['C2:C8']},
   {q:'입고가 있었던 날짜 목록은?',fn:'UNIQUE',tpl:'UNIQUE({0})',slots:[R('범위')],sol:['A2:A8']},
   {q:'거래한 공급사는 모두 몇 곳?',fn:'COUNTA',tpl:'COUNTA(UNIQUE({0}))',slots:[R('범위')],sol:['B2:B8']},
-  {q:'입고된 품목은 모두 몇 가지?',fn:'COUNTA',tpl:'COUNTA(UNIQUE({0}))',slots:[R('범위')],sol:['C2:C8']}]}
+  {q:'입고된 품목은 모두 몇 가지?',fn:'COUNTA',tpl:'COUNTA(UNIQUE({0}))',slots:[R('범위')],sol:['C2:C8']}]},
+
+/* ---- 실무 ---- */
+{id:'PIVOT',level:'prac',kind:'pivot',name:'피벗 테이블',sig:'삽입 → 피벗 테이블',desc:'필드를 행·열·값에 넣어 요약표 만들기',note:'note-pivot',
+ tip:'숫자 필드를 값에 넣으면 기본이 <b>합계</b>, 글자 필드를 넣으면 <b>개수</b>입니다. 원본은 머리글 한 줄 아래로 빈 행·병합 셀 없이 쌓여 있어야 하고, 원본을 고친 뒤엔 피벗에서 새로 고침(Alt+F5)을 눌러야 반영됩니다.',
+ items:[
+  {q:'창고별 출고 수량 합계를 보여주세요.',target:{rows:['창고'],cols:[],vals:[{f:'수량',agg:'합계'}]},
+   x:'창고를 행, 수량을 값에 넣으면 끝입니다. 숫자 필드라서 값에 넣는 순간 합계로 잡힙니다. 창고 수만큼 SUMIF를 쓰던 일을 끌어다 놓기 두 번으로 대신하는 셈이에요.'},
+  {q:'품목을 세로로, 월을 가로로 놓고 수량 합계를 교차표로 보여주세요.',target:{rows:['품목'],cols:['월'],vals:[{f:'수량',agg:'합계'}]},
+   x:'행과 열에 필드를 하나씩 넣으면 교차표가 됩니다. 둘의 위치를 바꾸면 표가 옆으로 눕는데, 항목이 많은 쪽을 행에 두는 게 화면에서 읽기 편합니다. 맨 오른쪽 총합계 열은 품목별 전체 합계입니다.'},
+  {q:'창고별로 주문이 몇 건 나갔는지(건수) 보여주세요.',target:{rows:['창고'],cols:[],vals:[{f:'주문번호',agg:'개수'}]},
+   x:'주문번호처럼 글자 필드를 값에 넣으면 기본이 개수라서 건수가 바로 나옵니다. 수량을 넣었다면 값 필드 설정에서 개수로 바꿔도 같은 결과예요. 건수는 빈 칸 없는 필드로 세야 정확합니다.'},
+  {q:'품목별로 한 건당 평균 금액이 얼마인지 보여주세요.',target:{rows:['품목'],cols:[],vals:[{f:'금액',agg:'평균'}]},
+   x:'금액을 값에 넣으면 기본이 합계라서 값 필드 설정에서 평균으로 바꿔야 합니다. 엑셀에선 값 영역의 필드를 눌러 값 필드 설정을 고르거나, 결과 칸을 우클릭해서 값 요약 기준을 바꿉니다.'},
+  {q:'10월 출고만 놓고 창고별 금액 합계를 보여주세요.',target:{rows:['창고'],cols:[],vals:[{f:'금액',agg:'합계'}],filter:{f:'월',v:'10월'}},
+   x:'특정 조건만 보려면 그 필드를 필터에 넣고 항목을 고릅니다. 월을 열에 넣고 10월 열만 읽어도 숫자는 같지만, 보고서에 다른 달이 같이 찍혀 나가요. 필터 대신 슬라이서를 달면 버튼으로 달을 바꿔 볼 수 있습니다.'}]},
+
+{id:'CLEAN',level:'prac',kind:'quiz',name:'데이터 정리',sig:'중복 제거 · 텍스트 나누기 · Ctrl+E',desc:'시스템에서 받은 데이터를 쓸 수 있게 다듬기',note:'note-clean',
+ tip:'정리 작업은 원본을 직접 바꾸는 경우가 많습니다. 손대기 전에 시트를 하나 복사해 두세요.',
+ items:[
+  {q:'ERP에서 내려받은 입고 목록에 같은 입고번호가 두 번씩 찍혀 있습니다. 표에서 중복된 행을 실제로 지우려면?',
+   o:['데이터 → 중복된 항목 제거','홈 → 조건부 서식 → 중복 값','COUNTIF로 개수 세기','필터에서 중복 체크 해제'],
+   x:'중복된 항목 제거는 기준 열을 골라 겹치는 행을 실제로 지웁니다. 조건부 서식의 중복 값은 색만 칠해 주니 눈으로 확인할 때 쓰고요. 기준 열을 잘못 고르면 멀쩡한 행까지 날아가니, 입고번호 열만 체크했는지 꼭 보세요.'},
+  {q:'"A-03-12" 형태의 로케이션 코드를 구역·열·단 세 칸으로 나누려면?',
+   o:['데이터 → 텍스트 나누기 (구분 기호 "-")','홈 → 셀 병합 해제','CONCAT 함수','데이터 → 통합'],
+   x:'텍스트 나누기에서 구분 기호를 기타 "-"로 지정하면 한 번에 세 칸으로 갈라집니다. 오른쪽 칸에 데이터가 있으면 덮어쓰니 빈 열을 먼저 만들어 두세요. 03처럼 앞자리 0을 살리려면 마지막 단계에서 열 형식을 텍스트로 지정합니다.'},
+  {q:'송장번호 KR20261016001 옆 칸에 "KR"만 한 번 직접 적었습니다. 나머지 행을 같은 패턴으로 채우는 단축키는?',
+   o:['Ctrl+E (빠른 채우기)','Ctrl+D (아래로 채우기)','Ctrl+R (오른쪽 채우기)','F4'],
+   x:'빠른 채우기는 옆 열을 보고 패턴을 알아내 나머지를 채웁니다. Ctrl+D는 윗 칸을 그대로 복사할 뿐이라 전부 "KR"이 돼요. 결과는 수식이 아닌 값이라 원본이 바뀌면 다시 해야 합니다.'},
+  {q:'수량 열 숫자들이 왼쪽에 붙어 있고 셀 모서리에 녹색 삼각형이 보입니다. SUM 결과는 0입니다. 원인은?',
+   o:['숫자가 텍스트 형식으로 저장됨','계산 옵션이 수동','셀 서식이 회계','열 너비가 좁음'],
+   x:'텍스트로 저장된 숫자는 SUM이 건너뜁니다. 범위를 잡고 경고 아이콘 → 숫자로 변환을 누르거나, 데이터 → 텍스트 나누기를 아무것도 안 바꾸고 마침으로 끝내면 한 번에 숫자가 됩니다. 시스템에서 받은 파일에서 정말 자주 생겨요.'},
+  {q:'거래처명 앞뒤에 공백이 섞여 VLOOKUP이 #N/A를 냅니다. 원본은 두고 찾을 값만 정리해서 조회하는 수식은?',
+   o:['=VLOOKUP(TRIM(A2), 표, 2, FALSE)','=TRIM(VLOOKUP(A2, 표, 2, FALSE))','=VLOOKUP(A2, 표, 2, TRUE)','=VLOOKUP(A2&" ", 표, 2, FALSE)'],
+   x:'찾을 값을 TRIM으로 감싸야 공백 빠진 값으로 찾습니다. 결과를 TRIM으로 감싸 봐야 이미 #N/A가 난 뒤라 소용없고요. 표 쪽 데이터에도 공백이 있다면 그쪽은 보조 열에 TRIM을 걸어 한 번 정리해 두는 편이 낫습니다.'}]},
+
+{id:'FMTIN',level:'prac',kind:'quiz',name:'서식·입력 관리',sig:'조건부 서식 · 유효성 검사 · 틀 고정',desc:'입력 실수를 막고 한눈에 보이게',note:'note-format',
+ tip:'조건부 서식과 유효성 검사는 셀 값이 바뀌면 자동으로 따라 움직입니다. 손으로 칠한 색이나 메모와 다른 점이에요.',
+ items:[
+  {q:'재고(B열)가 안전재고(C열)보다 적은 품목은 그 행 전체를 빨갛게 칠하고 싶습니다. 재고가 바뀌면 색도 따라 바뀌어야 합니다.',
+   o:['조건부 서식 → 새 규칙 → 수식 =$B2<$C2','채우기 색으로 직접 빨강','필터로 골라서 색칠','데이터 유효성 검사'],
+   x:'수식을 쓰는 규칙에 =$B2<$C2를 넣고 A2:E100처럼 행 전체를 범위로 잡으면, 각 행이 자기 재고와 안전재고를 비교해 칠해집니다. 열에만 $를 붙이는 건 오른쪽 칸들도 B·C열을 봐야 하고 행은 줄마다 바뀌어야 해서예요.'},
+  {q:'검수 결과 칸에 OK, NG, 보류 셋 중 하나만 들어가게 하고 싶습니다.',
+   o:['데이터 → 데이터 유효성 검사 → 목록','조건부 서식 → 셀 강조 규칙','셀 서식 → 텍스트','검토 → 시트 보호'],
+   x:'제한 대상을 목록으로, 원본에 OK,NG,보류를 쉼표로 적으면 드롭다운이 생기고 다른 값은 막힙니다. 목록이 자주 바뀌면 다른 시트에 항목을 두고 그 범위를 원본으로 지정하세요. 다만 다른 데서 복사해 붙여넣은 값은 검사를 그냥 통과합니다.'},
+  {q:'아래로 내려도 1행 머리글과 A열 품번이 계속 보이게 하려면, 어느 셀을 선택하고 보기 → 틀 고정을 해야 할까요?',
+   o:['B2','A1','A2','B1'],
+   x:'틀 고정은 선택한 셀의 위쪽 행과 왼쪽 열을 고정합니다. B2에서 틀 고정을 하면 1행과 A열이 같이 묶여요. 머리글만 고정하려면 첫 행 고정을 쓰면 됩니다.'},
+  {q:'매일 행이 추가되는 출고 목록이 있습니다. 합계 수식과 피벗 범위가 새 행까지 알아서 따라오게 하려면?',
+   o:['범위를 표(Ctrl+T)로 만든다','범위를 A1:E10000처럼 넉넉히 잡는다','매번 수식 범위를 고친다','시트를 복사해서 쓴다'],
+   x:'표로 만들면 아래에 행을 붙이는 순간 표가 늘어나고, 표를 가리키는 수식과 피벗도 따라옵니다. 수식도 =SUM(출고[수량])처럼 열 이름으로 써져서 읽기 쉽고요. 넉넉히 잡는 방법은 피벗에 (비어 있음) 항목이 끼고 파일도 무거워집니다.'},
+  {q:'다른 시트의 단가표 범위 단가!$A$2:$C$50을 수식마다 길게 쓰기 싫습니다. "단가표"라는 이름으로 부르려면?',
+   o:['범위 선택 후 이름 상자에 단가표 입력 (수식 → 이름 정의)','셀 서식 → 사용자 지정','데이터 → 통합','검토 → 새 메모'],
+   x:'범위를 잡고 왼쪽 위 이름 상자에 단가표라고 치고 Enter를 누르면 됩니다. 그다음부터 =VLOOKUP(A2, 단가표, 3, FALSE)처럼 쓸 수 있고, 이름은 원래 고정 참조라 $를 신경 쓸 필요가 없어요. 범위를 바꿀 땐 이름 관리자(Ctrl+F3)에서 고치면 쓰는 수식 전체에 반영됩니다.'}]},
+
+{id:'SORTF',level:'prac',kind:'quiz',name:'정렬·필터',sig:'다중 정렬 · SUBTOTAL · Alt+;',desc:'원하는 순서로 보고 필요한 행만 추리기',note:'note-filter',
+ tip:'필터가 걸린 상태에서는 SUM 같은 일반 함수가 숨은 행까지 계산합니다. 보이는 행만 보려면 SUBTOTAL을 쓰세요.',
+ items:[
+  {q:'창고별로 묶고, 같은 창고 안에서는 수량이 큰 순서로 정렬하려면?',
+   o:['데이터 → 정렬에서 기준 추가: 1순위 창고, 2순위 수량 내림차순','수량 열에서 내림차순만 누른다','창고 열에서 오름차순만 누른다','필터로 창고를 하나씩 고른다'],
+   x:'정렬 대화상자에서 기준 추가로 단계를 겹니다. 정렬 버튼으로 하려면 순서를 거꾸로(수량 먼저, 창고 나중) 눌러야 해서 헷갈리기 쉬워요. 내 데이터에 머리글 표시가 체크돼 있는지도 확인하세요.'},
+  {q:'필터로 경산 창고만 보이게 한 상태에서, 보이는 행의 수량 합계만 구하려면?',
+   o:['=SUBTOTAL(9, D2:D100)','=SUM(D2:D100)','=SUMIF(D2:D100, "경산")','=COUNT(D2:D100)'],
+   x:'SUBTOTAL은 필터로 숨겨진 행을 빼고 계산합니다. 첫 인수 9가 합계, 1이 평균, 3이 개수(COUNTA)예요. 필터가 아니라 행 숨기기로 감춘 행까지 빼려면 109를 씁니다.'},
+  {q:'지연 오더만 필터로 걸러 놓고 다른 시트로 복사하려 합니다. 손으로 숨겨 둔 행까지 딸려오지 않게 하려면?',
+   o:['범위 선택 후 Alt+; (화면에 보이는 셀만) → 복사','그냥 Ctrl+C','행 높이를 0으로','Ctrl+A 후 복사'],
+   x:'필터 결과만 복사할 땐 엑셀이 알아서 보이는 셀만 가져가지만, 손으로 숨긴 행이나 그룹으로 접은 행은 같이 딸려옵니다. Alt+;로 보이는 셀만 잡고 복사하면 어느 경우든 안전해요. 반대로 필터된 범위에 붙여넣으면 숨은 행에도 들어갈 수 있으니 조심하세요.'},
+  {q:'품목 열을 가나다순이 아니라 "볼트 → 너트 → 와셔" 순서로 정렬하고 싶습니다.',
+   o:['정렬 → 정렬 기준에서 "사용자 지정 목록"에 순서 등록','내림차순 정렬','텍스트 나누기','필터 → 텍스트 필터'],
+   x:'정렬 대화상자에서 정렬 방식을 사용자 지정 목록으로 바꾸고 볼트, 너트, 와셔를 등록하면 그 순서로 섭니다. 등록한 목록은 피벗 테이블 항목 순서에도 그대로 쓰여요.'},
+  {q:'필터를 걸었더니 아래쪽 일부 행이 필터 목록에 아예 나타나지 않습니다. 가장 흔한 원인은?',
+   o:['데이터 중간에 완전히 빈 행이 있다','글꼴이 다르다','셀 서식이 숫자다','시트가 보호돼 있지 않다'],
+   x:'필터는 빈 행을 만나면 표가 거기서 끝났다고 봅니다. 빈 행을 지우거나, 전체 범위를 직접 잡고 필터를 걸거나, 표(Ctrl+T)로 바꾸면 해결돼요. Ctrl+↓로 내려가 보면 빈 행 위치가 바로 보입니다.'}]},
+
+{id:'PQ',level:'prac',kind:'quiz',name:'파워쿼리·데이터 모델',sig:'데이터 → 데이터 가져오기',desc:'반복 취합 자동화, 여러 표 엮어서 분석',note:'note-pq',
+ tip:'파워쿼리는 정리 과정을 단계로 기억합니다. 한 번 만들어 두면 다음 달엔 새로 고침만 누르면 돼요.',
+ items:[
+  {q:'매달 같은 양식의 출고 파일 12개를 한 표로 합쳐야 합니다. 다음 달에도 파일만 폴더에 넣으면 갱신되게 하려면?',
+   o:['데이터 → 데이터 가져오기 → 폴더에서 (파워쿼리)','파일마다 열어서 복사·붙여넣기','VLOOKUP으로 파일마다 연결','매크로 기록기로 한 번 녹화'],
+   x:'폴더에서 가져오기는 폴더 안 파일을 전부 이어 붙입니다. 다음 달 파일을 폴더에 넣고 새로 고침만 누르면 월마감 취합이 끝나요. 파일마다 열 이름과 순서가 같아야 깔끔하게 붙습니다.'},
+  {q:'파워쿼리로 정리한 표가 있습니다. 원본 파일 내용이 바뀌었을 때 결과에 반영하려면?',
+   o:['데이터 → 모두 새로 고침','쿼리를 지우고 다시 만든다','결과 표에 직접 고친다','엑셀을 껐다 켠다'],
+   x:'새로 고침하면 바뀐 원본에 기록해 둔 단계를 다시 적용합니다. 결과 표에 손으로 고친 값은 새로 고침 때 사라지니, 고칠 게 있으면 쿼리 단계에서 고치세요.'},
+  {q:'파워쿼리 편집기에서 "품번" 열의 앞뒤 공백을 지우는 메뉴는?',
+   o:['변환 → 서식 → 공백 제거','홈 → 행 제거','열 추가 → 인덱스 열','변환 → 피벗 열'],
+   x:'변환 탭 서식 메뉴의 공백 제거가 TRIM 함수와 같은 일을 합니다. 단계로 기록되니 다음 달 데이터에도 자동으로 적용돼요.'},
+  {q:'출고 표에는 품번만, 품목 마스터에는 품번·품명·단가가 있습니다. VLOOKUP 보조 열 없이 피벗 하나에서 품명별 금액을 보려면?',
+   o:['두 표를 데이터 모델에 넣고 품번으로 관계 설정','두 표를 한 시트에 나란히 붙인다','품번 열을 텍스트로 바꾼다','피벗을 두 개 만든다'],
+   x:'데이터 모델(파워피벗)에서 품번으로 관계를 걸면 피벗 하나에서 두 표의 필드를 같이 쓸 수 있습니다. 마스터 쪽 품번은 중복이 없어야 관계가 만들어져요. 행이 수십만 개여도 보조 열을 만드는 것보다 가볍습니다.'},
+  {q:'데이터 모델 피벗에서 창고별 평균 단가(금액 합계 ÷ 수량 합계)를 정확히 보려면?',
+   o:['DAX 측정값 =DIVIDE(SUM(출고[금액]), SUM(출고[수량]))','원본에 단가 열을 만들어 평균','값 필드 설정을 평균으로','결과를 복사해서 손으로 나눈다'],
+   x:'행마다 단가를 구해 평균을 내면 10개짜리 주문과 1,000개짜리 주문이 같은 무게로 섞여 틀어집니다. 측정값은 피벗 칸마다 합계끼리 나눠 주니 창고별, 월별로 잘라도 정확해요. DIVIDE는 0으로 나눌 때 오류 대신 빈 값을 돌려줍니다.'}]},
+
+/* ---- 개념 ---- */
+{id:'CERR',level:'concept',kind:'quiz',name:'오류값 읽기',sig:'#N/A · #REF! · #VALUE!',desc:'오류 이름만 보고 원인 짚기',note:'note-err',
+ tip:'오류값마다 뜻이 정해져 있습니다. 이름만 알아도 어디부터 볼지 바로 정해져요.',
+ items:[
+  {q:'VLOOKUP 결과가 #N/A입니다. 가장 먼저 의심할 것은?',
+   o:['찾을 값이 표 첫 열에 없다 (공백·숫자/텍스트 차이 포함)','열 번호가 표보다 크다','0으로 나눴다','함수 이름 오타'],
+   x:'#N/A는 못 찾았다는 뜻입니다. 정말 없는 경우도 있지만 실무에선 공백이 끼었거나 한쪽은 숫자, 한쪽은 텍스트인 경우가 더 많아요. 열 번호가 표보다 크면 #REF!, 함수 이름 오타는 #NAME?이 납니다.'},
+  {q:'수식이 참조하던 열을 삭제했더니 결과가 바뀌었습니다. 어떤 오류일까요?',
+   o:['#REF!','#N/A','#DIV/0!','#SPILL!'],
+   x:'#REF!는 가리키던 셀이 사라졌다는 뜻입니다. 지운 직후라면 Ctrl+Z가 제일 빠르고, 이미 저장했다면 수식 안 #REF! 부분을 새 범위로 다시 지정해야 해요.'},
+  {q:'=B2*C2 결과가 #VALUE!입니다. B2에는 "미정"이라고 적혀 있습니다. 왜일까요?',
+   o:['글자를 곱셈에 썼다','C2가 비어 있다','열 너비가 좁다','B2가 절대참조가 아니다'],
+   x:'#VALUE!는 계산에 맞지 않는 종류의 값이 들어갔다는 뜻입니다. 빈 칸은 0으로 계산돼 오류가 안 나요. 수량 칸에 "미정", "-" 같은 글자를 적는 습관이 이 오류의 단골 원인입니다.'},
+  {q:'=FILTER(...)를 입력했는데 #SPILL!이 떴습니다. 원인은?',
+   o:['결과가 흘러내릴 칸에 이미 다른 값이 있다','조건에 맞는 행이 없다','범위 행 수가 다르다','함수가 없는 버전이다'],
+   x:'동적 배열 함수는 결과를 아래·옆 칸으로 흘려보내는데, 그 자리에 뭔가 있으면 #SPILL!이 납니다. 막고 있는 칸을 비우면 바로 풀려요. 조건에 맞는 게 없으면 #CALC!, 함수를 지원하지 않는 버전이면 #NAME?입니다.'},
+  {q:'숫자가 있어야 할 칸이 ######으로만 보입니다. 무슨 뜻일까요?',
+   o:['열 너비가 좁아 숫자를 다 못 보여준다','값이 오류다','순환 참조가 생겼다','셀이 잠겨 있다'],
+   x:'####은 오류가 아니라 칸이 좁다는 표시입니다. 열 머리글 경계를 더블클릭하면 폭이 맞춰져요. 날짜 칸인데 넓혀도 계속 ####이면 날짜가 음수로 계산된 경우입니다.'}]},
+
+{id:'CTYPE',level:'concept',kind:'quiz',name:'데이터 형식',sig:'날짜 = 숫자 · 텍스트형 숫자',desc:'보이는 값과 실제 값이 다른 경우',note:'note-type',
+ tip:'셀에 보이는 모습과 실제로 저장된 값은 다를 수 있습니다. 수식 입력줄에 뜨는 값이 진짜 값이에요.',
+ items:[
+  {q:'날짜 2026-10-16이 들어 있는 셀의 서식을 "일반"으로 바꾸면 어떻게 보일까요?',
+   o:['46311 같은 숫자','2026-10-16 그대로','#VALUE!','20261016'],
+   x:'엑셀 날짜는 1900-01-01을 1로 세는 일련번호입니다. 그래서 납기일에서 발주일을 빼면 일수가 나오고, +7 하면 일주일 뒤가 돼요. "2026.10.16"처럼 글자로 들어온 날짜는 이런 계산이 안 됩니다.'},
+  {q:'347.256이 든 셀을 셀 서식으로 347.3처럼 보이게 했습니다. 이 셀에 10을 곱하면?',
+   o:['3472.56','3473','347.3','오류'],
+   x:'셀 서식은 보이는 모습만 바꾸고 실제 값은 그대로입니다. 화면 숫자를 더한 값과 SUM 결과가 몇 원씩 안 맞는 일이 여기서 생겨요. 값 자체를 바꾸려면 ROUND를 써야 합니다.'},
+  {q:'품번 "007"을 입력했더니 7이 됐습니다. 앞자리 0을 살리는 방법이 아닌 것은?',
+   o:['셀 서식을 숫자로 바꾼다','입력 전에 셀 서식을 텍스트로','앞에 작은따옴표를 붙여 \'007','셀 서식 사용자 지정 000'],
+   x:'숫자 서식은 오히려 앞자리 0을 없애는 쪽입니다. 텍스트 서식과 작은따옴표는 글자로 저장하고, 사용자 지정 000은 숫자 7을 007로 보여만 줘요. 계산할 일 없는 코드는 텍스트로 두는 게 조회할 때도 덜 꼬입니다.'},
+  {q:'A2에는 숫자 101, B2에는 텍스트 "101"이 있어 =A2=B2가 FALSE입니다. 같은 값으로 비교하려면?',
+   o:['=A2=VALUE(B2)','=A2=TRIM(B2)','=A2=B2*1&""','=A2=LEN(B2)'],
+   x:'엑셀은 숫자 101과 글자 "101"을 다른 값으로 봅니다. VLOOKUP #N/A의 단골 원인이에요. VALUE로 글자를 숫자로 바꾸거나, 반대로 A2&""로 숫자를 글자로 맞춰 비교합니다.'},
+  {q:'출근 9:00(B2), 퇴근 17:30(C2)입니다. =C2-B2 결과를 일반 서식으로 보면?',
+   o:['0.354166…','8.5','8:30','830'],
+   x:'시간은 하루를 1로 본 소수입니다. 8시간 30분은 8.5÷24 = 0.354…예요. 시간 수로 쓰려면 =(C2-B2)*24로 8.5를 얻습니다. 근무시간 합계가 24시간을 넘으면 서식을 [h]:mm으로 둬야 제대로 보여요.'}]},
+
+{id:'CFN',level:'concept',kind:'quiz',name:'함수 비교',sig:'COUNT·COUNTA · SUMIF·SUMIFS',desc:'비슷한 함수의 차이와 고르는 기준',note:'note-fn',
+ tip:'비슷해 보이는 함수는 인수 순서나 세는 대상이 다릅니다. 헷갈리면 개념 정리의 함수 목록을 같이 보세요.',
+ items:[
+  {q:'A2:A10 아홉 칸 중 3칸에 숫자, 2칸에 글자, 나머지는 비어 있습니다. =COUNTA(A2:A10)은?',
+   o:['5','3','2','9'],
+   x:'COUNTA는 비어 있지 않은 칸을 다 셉니다. 숫자만 세는 COUNT는 3, 빈 칸을 세는 COUNTBLANK는 4예요. 빈 칸처럼 보여도 ""를 돌려주는 수식이 들어 있으면 COUNTA는 그 칸도 셉니다.'},
+  {q:'SUMIF를 SUMIFS로 바꿔 조건을 하나 더 붙이려 합니다. 가장 많이 틀리는 부분은?',
+   o:['합계 범위가 맨 앞으로 온다','조건에 따옴표를 쓰지 않는다','범위에 $를 붙일 수 없다','조건은 2개까지만 된다'],
+   x:'SUMIF는 (조건범위, 조건, 합계범위), SUMIFS는 (합계범위, 조건범위1, 조건1, …) 순서입니다. AVERAGEIFS, MAXIFS도 SUMIFS처럼 대상 범위가 맨 앞이에요. 헷갈리면 조건이 하나여도 SUMIFS로 통일해 쓰는 게 실수가 적습니다.'},
+  {q:'코드·품목·단가 3열짜리 마스터에서 단가를 =VLOOKUP(A2, 마스터, 3, FALSE)로 가져오고 있습니다. 품목과 단가 사이에 "규격" 열을 끼우면?',
+   o:['단가 대신 규격을 가져온다','열 번호가 자동으로 4로 바뀐다','#REF! 오류가 난다','아무 영향 없다'],
+   x:'VLOOKUP의 열 번호는 숫자로 박혀 있어서 열을 끼우면 엉뚱한 열을 가져옵니다. 오류가 안 나서 더 위험해요. INDEX/MATCH나 XLOOKUP은 가져올 범위를 직접 가리키니 열을 끼워도 범위가 같이 밀립니다.'},
+  {q:'VLOOKUP 마지막 인수를 TRUE(근사 일치)로 두면 언제 맞는 결과가 나올까요?',
+   o:['첫 열이 오름차순 정렬돼 있고 구간을 찾을 때','정확히 같은 값을 찾을 때만','첫 열이 내림차순일 때','텍스트를 찾을 때만'],
+   x:'TRUE는 찾을 값 이하에서 가장 큰 값을 찾습니다. 수량 구간별 단가, 점수별 등급 같은 구간표에 쓰고, 첫 열이 오름차순이어야 해요. 코드 조회에 TRUE를 쓰면 없는 코드도 비슷한 행을 찾아와 조용히 틀립니다.'},
+  {q:'=IFERROR(VLOOKUP(...), 0)을 모든 조회에 습관처럼 쓰면 생기는 문제는?',
+   o:['코드 누락 같은 진짜 문제도 0으로 가려진다','계산이 멈춘다','결과가 텍스트로 바뀐다','절대참조가 풀린다'],
+   x:'IFERROR는 오류 종류를 가리지 않고 다 덮습니다. 마스터에 없는 신규 품번이 0원으로 계산돼도 아무도 모르게 돼요. "미등록"처럼 눈에 띄는 값을 넣거나, #N/A만 처리하는 IFNA를 쓰는 편이 낫습니다.'}]},
+
+{id:'CSTRUCT',level:'concept',kind:'quiz',name:'데이터 구조',sig:'한 행 한 건 · 병합 금지',desc:'함수와 피벗이 잘 먹는 원본 만드는 법',note:'note-struct',
+ tip:'원본은 단순하게, 보고용 모양은 피벗과 수식으로. 이 원칙만 지켜도 엑셀 작업 시간이 크게 줄어듭니다.',
+ items:[
+  {q:'피벗과 함수가 가장 잘 동작하는 원본 형태는?',
+   o:['머리글 한 줄 아래로 한 행에 한 건씩 쌓인 표','월마다 시트를 나눈 표','월을 열로 늘어놓은 가로형 표','소계 행이 중간중간 들어간 표'],
+   x:'원본은 세로로 쌓는 게 기본입니다. 월이 열로 늘어선 표는 보기엔 편해도 새 달마다 열을 추가해야 하고 피벗으로 다시 묶기도 어려워요. 보고서 모양은 피벗으로 만들고 원본은 원본대로 단순하게 두세요.'},
+  {q:'원본 표에서 병합 셀을 쓰면 안 되는 이유로 맞는 것은?',
+   o:['값은 첫 칸에만 남아 필터·정렬이 꼬인다','파일이 열리지 않는다','글꼴이 깨진다','인쇄가 안 된다'],
+   x:'병합하면 값은 맨 왼쪽 위 칸에만 남고 나머지는 빈 칸이 됩니다. 필터를 걸면 행이 빠지고, 크기가 다른 병합이 섞이면 정렬은 아예 거부돼요. 가운데 정렬만 필요하면 셀 서식 → 맞춤 → "선택 영역의 가운데로"를 쓰세요.'},
+  {q:'"경산 / 볼트 / 120"을 한 칸에 적어 두는 기록 방식의 문제는?',
+   o:['창고·품목·수량별로 집계하려면 다시 쪼개야 한다','글자 수 제한에 걸린다','저장이 안 된다','문제없다'],
+   x:'한 칸에는 한 가지 값만 넣어야 SUMIF, 피벗, 필터가 바로 먹습니다. 이미 이렇게 쌓였다면 텍스트 나누기에서 구분 기호를 "/"로 지정해 쪼개면 돼요.'},
+  {q:'원본 중간에 "9월 소계" 행을 손으로 넣어 두었습니다. 이 표로 피벗을 만들면?',
+   o:['소계가 데이터로 같이 더해져 총합계가 부푼다','소계 행은 자동으로 빠진다','피벗이 만들어지지 않는다','소계만 보여준다'],
+   x:'피벗은 소계 행도 데이터 한 줄로 봅니다. 총합계가 부풀고 "9월 소계"라는 이상한 항목까지 생겨요. 소계는 원본에 넣지 말고 피벗이나 SUBTOTAL로 계산하세요.'},
+  {q:'날짜 열에 "2026-10-16", "2026.10.16"이 섞여 있습니다. 바로 생기는 문제는?',
+   o:['점으로 찍은 값은 글자로 저장돼 정렬·날짜 계산이 틀어진다','모두 같은 날짜로 인식된다','파일 크기가 커진다','문제없다'],
+   x:'"2026.10.16"처럼 점으로 찍은 값은 엑셀이 날짜로 알아보지 못하고 글자로 저장합니다. 정렬하면 엉뚱한 순서가 되고 날짜 함수는 #VALUE!를 내요. 바꾸기(Ctrl+H)로 "."을 "-"로 바꾸면 대부분 날짜로 돌아옵니다.'}]},
+
+{id:'CFORM',level:'concept',kind:'quiz',name:'수식 다루기',sig:'시트 참조 · 계산 옵션 · 순환 참조',desc:'수식이 이상하게 굴 때 확인할 것',note:'note-ref',
+ tip:'수식이 멀쩡해 보이는데 결과가 이상하면, 참조 위치와 계산 옵션부터 봅니다.',
+ items:[
+  {q:'다른 시트 "단가표"의 B2를 가져오는 수식으로 맞는 것은?',
+   o:['=단가표!B2','=단가표.B2','=[단가표]B2','=B2(단가표)'],
+   x:'시트 이름 뒤에 느낌표를 붙입니다. 시트 이름에 띄어쓰기가 있으면 =\'10월 단가\'!B2처럼 작은따옴표로 감싸요. 수식 입력 중에 그 시트를 눌러 셀을 클릭하면 알아서 써 줍니다.'},
+  {q:'값을 바꿨는데 수식 결과가 그대로입니다. 다른 사람이 보낸 파일이에요. 먼저 확인할 것은?',
+   o:['수식 → 계산 옵션이 수동인지','셀 서식','글꼴','틀 고정'],
+   x:'계산 옵션이 수동이면 F9를 눌러야만 다시 계산됩니다. 무거운 파일을 다루던 사람이 수동으로 바꿔 둔 채 저장하면 받는 쪽에도 따라와요. 수식 → 계산 옵션 → 자동으로 돌려 두세요.'},
+  {q:'C10에 =SUM(C2:C10)을 넣었더니 경고가 뜨고 0이 나옵니다. 이유는?',
+   o:['수식이 자기 칸을 포함한 순환 참조','범위가 너무 크다','C열이 텍스트다','$가 없다'],
+   x:'자기 자신을 계산에 넣으면 끝없이 돌기 때문에 엑셀이 계산을 멈춥니다. 합계 칸은 더할 범위 바깥에 둬야 해요. 상태 표시줄 왼쪽에 순환 참조 위치가 표시됩니다.'},
+  {q:'시트 전체에서 어디가 수식이고 어디가 직접 친 값인지 한 번에 보려면?',
+   o:['Ctrl+` (숫자 1 왼쪽 키)로 수식 표시','Ctrl+1','F2','Ctrl+Shift+L'],
+   x:'Ctrl+`를 누르면 모든 칸이 수식으로 보이고 다시 누르면 돌아옵니다. 남이 만든 파일을 넘겨받았을 때 가장 먼저 해볼 만해요. 참조를 따라가려면 수식 → 참조되는 셀 추적을 씁니다.'},
+  {q:'표(Ctrl+T)로 만든 "출고" 표의 수량 열 합계를 열 이름으로 쓰면?',
+   o:['=SUM(출고[수량])','=SUM(출고!수량)','=SUM([출고]수량)','=SUM(수량:출고)'],
+   x:'표를 쓰면 출고[수량]처럼 표 이름과 열 이름으로 참조합니다. 이걸 구조적 참조라고 해요. 행이 늘어도 범위를 고칠 필요가 없고, 수식만 봐도 뭘 더하는지 읽힙니다.'}]}
+
 ];
 
 /* 문제 정규화 + 정답 미리 계산 */
+/* ---------- 보기 순서 섞기 (문제마다 고정) ---------- */
+function shuffleIdx(n,seedStr){
+  let h=2166136261; for(const ch of seedStr){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
+  const rnd=()=>{ h^=h<<13; h^=h>>>17; h^=h<<5; return ((h>>>0)%10000)/10000; };
+  const a=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ---------- 피벗 엔진 ---------- */
+const PVS=sheetOf(SH.pv);
+const PVF=PVS[0];
+const PVD=PVS.slice(1).map(r=>Object.fromEntries(PVF.map((f,i)=>[f,r[i]])));
+const AGGS=['합계','개수','평균','최대','최소'];
+const isNumF=f=>PVD.every(r=>typeof r[f]==='number');
+const nsort=(a,b)=>String(a).localeCompare(String(b),'ko',{numeric:true});
+function aggr(arr,agg){
+  const v=arr.filter(x=>x!=null&&x!=='');
+  if(agg==='개수') return v.length;
+  const n=v.filter(x=>typeof x==='number');
+  if(agg==='합계') return sum(n);
+  if(!n.length) return null;
+  if(agg==='평균') return sum(n)/n.length;
+  return Math[agg==='최대'?'max':'min'](...n);
+}
+function pivotCalc(cfg){
+  if(!cfg||!cfg.vals.length) return null;
+  let D=PVD;
+  if(cfg.filter&&cfg.filter.v!=='(모두)') D=D.filter(r=>String(r[cfg.filter.f])===String(cfg.filter.v));
+  const key=(r,fs)=>fs.map(f=>r[f]).join(' / ');
+  const uniq=fs=>[...new Set(D.map(r=>key(r,fs)))].sort(nsort);
+  const rk=cfg.rows.length?uniq(cfg.rows):[null];
+  const ck=cfg.cols.length?uniq(cfg.cols):[null];
+  const cell=(rv,cv,v)=>aggr(D.filter(r=>(rv===null||key(r,cfg.rows)===rv)&&(cv===null||key(r,cfg.cols)===cv)).map(r=>r[v.f]),v.agg);
+  const colDefs=[];
+  ck.forEach(c=>cfg.vals.forEach(v=>colDefs.push({c,v})));
+  if(cfg.cols.length) cfg.vals.forEach(v=>colDefs.push({c:null,v,tot:true}));
+  const body=rk.map(r=>({label:r===null?'':r,vals:colDefs.map(cd=>cell(r,cd.c,cd.v))}));
+  const total=cfg.rows.length?{label:'총합계',vals:colDefs.map(cd=>cell(null,cd.c,cd.v))}:null;
+  const multiV=cfg.vals.length>1;
+  const head=[cfg.rows.join(' / ')||'',...colDefs.map(cd=>{ const vn=cd.v.agg+' : '+cd.v.f;
+    if(cd.tot) return multiV?'총합계 '+vn:'총합계';
+    if(cd.c===null) return vn;
+    return multiV?cd.c+' '+vn:cd.c; })];
+  return {head,body,total,colKey:colDefs.map(cd=>cd.tot?'#T':cd.c),cols:cfg.cols.length?cfg.cols.join(' / '):''};
+}
+const pvNum=v=>v==null?'':(Math.round(v*100)/100).toLocaleString('en-US');
+function pvCanon(o){ if(!o) return 'null';
+  const r=x=>x==null?null:Math.round(x*1e6)/1e6;
+  return JSON.stringify([o.colKey,o.body.map(b=>[b.label,b.vals.map(r)]),o.total?o.total.vals.map(r):null]); }
+function pvTable(o,colsLabel){
+  if(!o) return '<div class="ph">값 영역에 필드를 넣으면 여기에 피벗이 만들어집니다.</div>';
+  const top=o.colKey.some(c=>c!==null)?`<tr><th></th><th colspan="${o.head.length-1}">${esc(colsLabel||'')} ▾</th></tr>`:'';
+  return `<table class="ctab">${top}<tr>${o.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${o.body.map(b=>`<tr><td>${esc(b.label)}</td>${b.vals.map(v=>`<td class="n">${pvNum(v)}</td>`).join('')}</tr>`).join('')}${o.total?`<tr class="tot"><td>${o.total.label}</td>${o.total.vals.map(v=>`<td class="n">${pvNum(v)}</td>`).join('')}</tr>`:''}</table>`;
+}
+
 const argVals=(args,slots)=>args.map((a,i)=>slots[i].t==='choice'?pv(a):a);
 GROUPS.forEach(g=>{
   if(g.kind==='key'){ g.list=g.items; return; }
+  if(g.kind==='quiz'){ g.list=g.items.map((x,i)=>{ const ord=shuffleIdx(x.o.length,g.id+':'+i); return Object.assign({},x,{o:ord.map(k=>x.o[k]),a:ord.indexOf(x.a||0)}); }); return; }
+  if(g.kind==='pivot'){ g.list=g.items.map(x=>Object.assign({},x,{exp:pivotCalc(x.target)})); return; }
   g.S=g.sheet?sheetOf(SH[g.sheet]):null;
   g.list=g.qs.map(x=>{
     const P=Array.isArray(x)?{q:x[0],sol:x[1],opts:x[2]}:x;
@@ -695,8 +1014,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 let st={view:'home',level:store.level||'basic',gid:null,qi:0,args:[],active:0,result:null,revealed:false,msg:'',mods:[],key:null};
 let drag=null, cellEls=[];
 const G=()=>GM[st.gid], P=()=>G().list[st.qi];
-function reset(){ Object.assign(st,{lastRef:null,args:[],active:0,result:null,revealed:false,msg:'',mods:[],key:null}); drag=null; }
-function render(){ if(st.view==='home') home(); else if(G().kind==='key') keyPlay(); else fnPlay(); }
+function reset(){ Object.assign(st,{pick:null,pv:{rows:[],cols:[],vals:[],filter:null},pvSel:null,lastRef:null,args:[],active:0,result:null,revealed:false,msg:'',mods:[],key:null}); drag=null; }
+function render(){ if(st.view==='home') home(); else if(st.view==='notes') notes(); else { const k=G().kind; if(k==='key') keyPlay(); else if(k==='quiz') quizPlay(); else if(k==='pivot') pivotPlay(); else fnPlay(); } }
 
 function fmt(v){
   if(Array.isArray(v)) return v.map(x=>Array.isArray(x)?x.map(fmt).join(' / '):fmt(x)).join(', ');
@@ -715,9 +1034,10 @@ function home(){
   <header style="display:flex;flex-direction:column;gap:8px">
     <div class="fbar" aria-hidden="true"><span class="nb">A1</span><span class="fxl">fx</span><span class="ft">=실무(단축키, 함수)</span></div>
     <h1>엑셀 실무 드릴</h1>
-    <p class="sub">출고·재고·입고 데이터로 푸는 ${TOTAL}문제. 함수는 표를 직접 끌어서 범위를 잡고, 단축키는 키를 조합해서 맞힙니다.</p>
+    <p class="sub">출고·재고·입고 데이터로 푸는 ${TOTAL}문제. 함수는 표를 직접 끌어서 범위를 잡고, 단축키는 키를 조합해서, 피벗은 필드를 배치해서 맞힙니다.</p>
     <div class="meter"><div class="bar"><i style="width:${Math.round(n/TOTAL*100)}%"></i></div><span>${n} / ${TOTAL} 해결</span></div>
   </header>
+  <button class="ncard" data-note="top"><div><b>개념 정리</b><p>참조 · 오류값 · 함수 · 피벗 · 실무 기능 · 단축키를 한 페이지에</p></div><span class="arr">→</span></button>
   <nav class="tabs" role="tablist">${LEVELS.map(l=>{const gg=GROUPS.filter(g=>g.level===l.id);const a=gg.reduce((x,g)=>x+solvedN(g),0),b=gg.reduce((x,g)=>x+g.list.length,0);
     return `<button class="tab" role="tab" aria-selected="${l.id===st.level}" data-tab="${l.id}">${l.name}<small>${a}/${b}</small></button>`}).join('')}</nav>
   <section class="list">${gs.map(g=>`<button class="item" data-g="${g.id}">
@@ -745,7 +1065,7 @@ function fnPlay(){
   <div class="helper" id="helper"></div>
   <div class="actions">${p.slots.some(s=>s.t!=='choice')?'<button class="ghost f4" id="f4" title="참조 고정 전환">F4 $고정</button>':''}<button class="ghost" id="clear">지우기</button><button class="primary" id="go">확인 <kbd>Enter</kbd></button></div>
   <div class="sheetwrap"><div class="sheet" id="sheet" style="grid-template-columns:28px repeat(${cols},minmax(max-content,1fr))"></div></div>
-  <div class="tip">${g.tip}</div>`;
+  <div class="tip">${g.tip}${noteLink(g)}</div>`;
   buildSheet(); drawAll();
 }
 function buildSheet(){
@@ -907,7 +1227,7 @@ function keyPlay(){
   <span class="lbl">키</span>
   <div class="keys">${KEYS.map(k=>`<button class="key" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>
   <div class="actions"><button class="ghost" id="clear">지우기</button><button class="primary" id="go">확인</button></div>
-  <p class="tip">PC라면 실제 키보드로 눌러도 바로 채점됩니다. Ctrl+T처럼 브라우저가 먼저 가로채는 조합은 화면 버튼으로 고르세요. 방향키는 ↑↓←→ 중 아무거나 같은 뜻으로 칩니다.</p>`;
+  <p class="tip">PC라면 실제 키보드로 눌러도 바로 채점됩니다. Ctrl+T처럼 브라우저가 먼저 가로채는 조합은 화면 버튼으로 고르세요. 방향키는 ↑↓←→ 중 아무거나 같은 뜻으로 칩니다.<br>${noteLink(G())}</p>`;
   drawKey();
 }
 const caps=arr=>arr.map(k=>`<span class="kc">${esc(k)}</span>`).join('<span class="plus">+</span>');
@@ -934,15 +1254,325 @@ function keyCheck(){
 }
 const CODE={ArrowUp:'방향키',ArrowDown:'방향키',ArrowLeft:'방향키',ArrowRight:'방향키',Home:'Home',Space:'Space',Enter:'Enter',NumpadEnter:'Enter',F2:'F2',F4:'F4',Semicolon:';',Equal:'=',Digit1:'1',KeyC:'C',KeyD:'D',KeyG:'G',KeyL:'L',KeyT:'T',KeyV:'V',KeyZ:'Z'};
 
+/* ---------- 개념 정리 내용 ---------- */
+const NOTE_SECTIONS=[
+{id:'note-ref',t:'참조와 수식',h:`
+<p>수식을 다른 칸으로 복사하면 엑셀은 칸 주소를 같은 거리만큼 옮깁니다. 옮기면 안 되는 부분에 $를 붙여 고정해요.</p>
+<div class="ctabw"><table class="ctab"><tr><th>표기</th><th>이름</th><th>복사했을 때</th></tr>
+<tr><td><code>A1</code></td><td>상대참조</td><td>행·열 모두 따라 움직임</td></tr>
+<tr><td><code>$A$1</code></td><td>절대참조</td><td>어디로 복사해도 고정</td></tr>
+<tr><td><code>A$1</code></td><td>혼합참조(행 고정)</td><td>아래로 복사해도 1행 그대로, 옆으로는 움직임</td></tr>
+<tr><td><code>$A1</code></td><td>혼합참조(열 고정)</td><td>옆으로 복사해도 A열 그대로, 아래로는 움직임</td></tr></table></div>
+<p>수식 입력 중 주소에 커서를 두고 <b>F4</b>를 누를 때마다 A1 → $A$1 → A$1 → $A1 순으로 바뀝니다.</p>
+<h3>$를 꼭 붙이는 자리</h3>
+<ul>
+<li>VLOOKUP·XLOOKUP·INDEX/MATCH의 <b>표 범위</b>: 아래로 복사하면 범위가 같이 내려가서 위쪽 데이터가 빠지고 #N/A가 납니다.</li>
+<li>단가·환율·목표치처럼 <b>한 칸뿐인 기준값</b>: 안 붙이면 빈 칸을 곱해서 0이 나옵니다.</li>
+<li>구성비의 <b>분모(합계)</b>: 안 붙이면 #DIV/0!.</li>
+<li>누계 <code>=SUM($B$2:B2)</code>: 시작점만 고정하고 끝은 상대참조.</li>
+<li>SUMIF·COUNTIFS의 조건 범위: 조건을 셀로 바꿔 복사하는 경우가 많아서 고정해 두면 안전합니다.</li>
+<li>조건부 서식 수식 <code>=$B2&lt;$C2</code>: 행 전체를 칠할 땐 열만 고정.</li></ul>
+<h3>수식 관련 기본기</h3>
+<ul>
+<li>다른 시트 참조: <code>=단가표!B2</code>, 시트 이름에 공백이 있으면 <code>='10월 단가'!B2</code></li>
+<li>표(Ctrl+T)의 구조적 참조: <code>=SUM(출고[수량])</code>, 행이 늘어도 범위 수정 불필요</li>
+<li>이름 정의: 범위를 잡고 이름 상자에 이름 입력. 이름은 원래 고정 참조라 $가 필요 없음</li>
+<li>계산 옵션이 수동이면 F9를 눌러야 다시 계산됨 (수식 → 계산 옵션 → 자동)</li>
+<li>순환 참조: 수식이 자기 칸을 포함하면 계산이 멈춤. 합계 칸은 범위 밖에</li>
+<li>Ctrl+&#96;: 시트 전체를 수식 보기로 전환</li></ul>`},
+
+{id:'note-err',t:'오류값',h:`
+<div class="ctabw"><table class="ctab"><tr><th>오류</th><th>뜻</th><th>흔한 원인과 해결</th></tr>
+<tr><td><code>#N/A</code></td><td>못 찾음</td><td>찾을 값이 표 첫 열에 없음. 공백(TRIM), 숫자/텍스트 형식 차이부터 확인</td></tr>
+<tr><td><code>#REF!</code></td><td>참조 사라짐</td><td>참조하던 행·열·시트 삭제, VLOOKUP 열 번호가 표보다 큼</td></tr>
+<tr><td><code>#VALUE!</code></td><td>값 종류가 안 맞음</td><td>숫자 계산에 "미정" 같은 글자, 글자로 된 날짜, 범위 크기 불일치</td></tr>
+<tr><td><code>#DIV/0!</code></td><td>0으로 나눔</td><td>분모가 빈 칸이거나 0. 분모 참조 고정 여부 확인, 필요하면 IFERROR</td></tr>
+<tr><td><code>#NAME?</code></td><td>모르는 이름</td><td>함수 이름 오타, 따옴표 없는 글자 조건, 지원 안 하는 버전의 새 함수</td></tr>
+<tr><td><code>#SPILL!</code></td><td>결과를 펼칠 자리 없음</td><td>FILTER·UNIQUE 결과가 나갈 칸에 값이 있음. 막는 칸 비우기</td></tr>
+<tr><td><code>#CALC!</code></td><td>계산 결과 없음</td><td>FILTER 조건에 맞는 행이 없음. 세 번째 인수로 대체값 지정</td></tr>
+<tr><td><code>#NUM!</code></td><td>숫자 범위 문제</td><td>LARGE 순위가 개수보다 큼, 계산 불가능한 숫자</td></tr>
+<tr><td><code>####</code></td><td>오류 아님</td><td>열이 좁음. 넓혀도 그대로면 음수 날짜</td></tr></table></div>
+<p>IFERROR로 감싸면 화면은 깨끗해지지만 진짜 문제도 같이 가려집니다. #N/A만 처리하는 IFNA를 쓰거나 "미등록"처럼 눈에 띄는 값을 넣는 쪽을 권합니다.</p>`},
+
+{id:'note-type',t:'데이터 형식',h:`
+<ul>
+<li><b>날짜는 숫자</b>입니다. 1900-01-01이 1이고 2026-10-16은 46311. 그래서 날짜끼리 빼면 일수가 나오고, 날짜+7은 일주일 뒤입니다.</li>
+<li><b>시간은 하루의 소수</b>입니다. 12:00은 0.5. 시간 수로 쓰려면 ×24, 합계가 24시간을 넘으면 서식 <code>[h]:mm</code>.</li>
+<li><b>텍스트형 숫자</b>: 왼쪽 정렬, 녹색 삼각형이 보이면 의심. SUM이 건너뛰고 VLOOKUP이 못 찾습니다. 경고 아이콘 → 숫자로 변환, 또는 텍스트 나누기 → 마침.</li>
+<li><b>셀 서식은 보이는 모양만</b> 바꿉니다. 값 자체를 자르려면 ROUND·ROUNDUP·ROUNDDOWN.</li>
+<li><b>앞자리 0</b>(007, 03)을 살리려면 텍스트 서식, 작은따옴표 입력, 또는 사용자 지정 서식 000.</li>
+<li>"2026.10.16"처럼 점으로 쓴 날짜는 글자로 저장됩니다. Ctrl+H로 "."을 "-"로 바꾸면 날짜로 돌아옵니다.</li></ul>`},
+
+{id:'note-struct',t:'데이터 구조 원칙',h:`
+<p>함수, 피벗, 필터가 제대로 동작하는 원본은 모양이 정해져 있습니다. 보고서처럼 예쁘게 만드는 건 마지막 단계에서 따로 하세요.</p>
+<ol>
+<li>머리글은 한 줄. 열마다 하나의 항목(날짜, 창고, 품목, 수량…)</li>
+<li>한 행에 한 건. 데이터는 아래로 쌓고, 월이나 창고를 열로 늘어놓지 않기</li>
+<li>한 칸에 한 값. "경산 / 볼트 / 120"처럼 합쳐 적지 않기</li>
+<li>병합 셀 금지. 가운데 정렬이 필요하면 "선택 영역의 가운데로"</li>
+<li>중간에 빈 행, 소계 행, 메모 행 넣지 않기</li>
+<li>같은 열에는 같은 형식(날짜면 날짜, 숫자면 숫자)</li>
+<li>원본 시트와 보고 시트를 분리. 보고 시트는 피벗과 수식으로만 만들기</li></ol>`},
+
+{id:'note-fn',t:'함수 한눈에',h:`
+<p>문제에 나온 함수를 난이도별로 모았습니다. 회색 줄이 쓰임새, 아래가 쓸 때 주의할 점입니다.</p>
+<h3>헷갈리는 짝</h3>
+<div class="ctabw"><table class="ctab"><tr><th>비교</th><th>차이</th></tr>
+<tr><td>COUNT / COUNTA / COUNTBLANK</td><td>숫자만 / 비어 있지 않은 칸 / 빈 칸</td></tr>
+<tr><td>SUMIF / SUMIFS</td><td>SUMIF는 합계 범위가 맨 뒤, SUMIFS는 맨 앞</td></tr>
+<tr><td>VLOOKUP / XLOOKUP</td><td>VLOOKUP은 첫 열에서만 찾고 열 번호가 숫자로 박힘. XLOOKUP은 찾을 범위·가져올 범위를 따로 지정</td></tr>
+<tr><td>FALSE / TRUE (VLOOKUP)</td><td>정확히 일치 / 구간 찾기(첫 열 오름차순 필수)</td></tr>
+<tr><td>ROUND / 셀 서식</td><td>값을 바꿈 / 보이는 모양만 바꿈</td></tr>
+<tr><td>SUM / SUBTOTAL(9, …)</td><td>숨은 행 포함 / 필터로 숨은 행 제외</td></tr>
+<tr><td>IFERROR / IFNA</td><td>모든 오류를 덮음 / #N/A만 처리</td></tr></table></div>`},
+
+{id:'note-pivot',t:'피벗 테이블 사용법',h:`
+<p>원본 데이터를 끌어다 놓기만으로 요약표를 만드는 기능입니다. SUMIF를 여러 개 쓰던 집계를 대부분 대신합니다.</p>
+<h3>만드는 순서</h3>
+<ol>
+<li>원본 확인: 머리글 한 줄, 빈 행·병합 셀 없음. 표(Ctrl+T)로 만들어 두면 행이 늘어도 범위가 따라옵니다.</li>
+<li>원본 안 아무 칸을 누르고 <b>삽입 → 피벗 테이블 → 새 워크시트</b>.</li>
+<li>오른쪽 필드 목록에서 필드를 아래 네 영역으로 끌어 놓습니다.</li></ol>
+<div class="ctabw"><table class="ctab"><tr><th>영역</th><th>역할</th><th>예</th></tr>
+<tr><td>행</td><td>세로로 나열할 기준</td><td>창고별, 품목별</td></tr>
+<tr><td>열</td><td>가로로 나눌 기준</td><td>월별로 옆으로 펼치기</td></tr>
+<tr><td>값</td><td>계산할 숫자</td><td>수량 합계, 주문 건수</td></tr>
+<tr><td>필터</td><td>보고서 전체에 거는 조건</td><td>10월만 보기</td></tr></table></div>
+<h3>자주 쓰는 설정</h3>
+<ul>
+<li><b>값 필드 설정</b>: 숫자 필드는 합계, 글자 필드는 개수가 기본입니다. 평균·최대·최소로 바꾸려면 값 영역 필드 → 값 필드 설정, 또는 결과 칸 우클릭 → 값 요약 기준.</li>
+<li><b>값 표시 형식</b>: 우클릭 → 값 표시 형식 → 총합계 비율이면 구성비가 바로 나옵니다.</li>
+<li><b>날짜 그룹화</b>: 날짜 필드를 행에 넣고 우클릭 → 그룹 → 월·분기·연.</li>
+<li><b>새로 고침</b>: 원본을 고쳐도 피벗은 저절로 안 바뀝니다. Alt+F5(현재 피벗), Ctrl+Alt+F5(모두 새로 고침).</li>
+<li><b>상세 보기</b>: 숫자 칸을 더블클릭하면 그 숫자를 만든 원본 행들이 새 시트로 나옵니다. 숫자가 이상할 때 검산용으로 좋아요.</li>
+<li><b>슬라이서</b>: 피벗 테이블 분석 → 슬라이서 삽입. 필터를 버튼으로 바꿔 보고서에서 클릭 한 번으로 조건을 바꿉니다.</li>
+<li><b>보고서 레이아웃</b>: 디자인 → 보고서 레이아웃 → 테이블 형식으로 표시하면 행 필드가 열마다 나뉘어 다른 데 붙여넣기 좋습니다.</li>
+<li>빈 칸을 0으로 보이게: 피벗 테이블 옵션 → 빈 셀 표시에 0.</li></ul>`},
+
+{id:'note-clean',t:'데이터 정리 기능',h:`
+<div class="ctabw"><table class="ctab"><tr><th>하고 싶은 일</th><th>메뉴·방법</th></tr>
+<tr><td>중복 행 지우기</td><td>데이터 → 중복된 항목 제거 (기준 열 선택 주의)</td></tr>
+<tr><td>중복 눈으로 확인</td><td>홈 → 조건부 서식 → 셀 강조 규칙 → 중복 값</td></tr>
+<tr><td>한 칸을 여러 칸으로</td><td>데이터 → 텍스트 나누기 → 구분 기호(쉼표, -, / 등)</td></tr>
+<tr><td>패턴대로 채우기</td><td>첫 칸만 직접 쓰고 Ctrl+E (빠른 채우기)</td></tr>
+<tr><td>텍스트형 숫자 고치기</td><td>경고 아이콘 → 숫자로 변환, 또는 텍스트 나누기 → 마침</td></tr>
+<tr><td>공백 지우기</td><td>보조 열에 =TRIM(A2), 파워쿼리라면 변환 → 서식 → 공백 제거</td></tr>
+<tr><td>한꺼번에 바꾸기</td><td>Ctrl+H (찾기 및 바꾸기)</td></tr>
+<tr><td>빈 칸만 골라 채우기</td><td>범위 선택 → F5 → 옵션 → 빈 셀 → 값 입력 후 Ctrl+Enter</td></tr></table></div>
+<p>정리 작업은 대부분 원본을 바로 바꿉니다. 시작 전에 시트를 하나 복사해 두는 게 제일 확실한 안전장치예요.</p>`},
+
+{id:'note-format',t:'서식·입력 관리',h:`
+<div class="ctabw"><table class="ctab"><tr><th>기능</th><th>메뉴</th><th>실무에서</th></tr>
+<tr><td>조건부 서식</td><td>홈 → 조건부 서식</td><td>재고 부족 행 빨강, 납기 지난 날짜 강조. 행 전체는 "수식을 사용하여…" + <code>=$B2&lt;$C2</code></td></tr>
+<tr><td>데이터 유효성 검사</td><td>데이터 → 데이터 유효성 검사</td><td>목록으로 드롭다운(OK,NG,보류), 정수만, 날짜 범위 제한</td></tr>
+<tr><td>틀 고정</td><td>보기 → 틀 고정</td><td>선택한 셀의 위쪽 행과 왼쪽 열 고정. B2면 1행+A열</td></tr>
+<tr><td>표</td><td>Ctrl+T</td><td>행 추가 시 범위 자동 확장, 구조적 참조, 피벗 원본으로 좋음</td></tr>
+<tr><td>이름 정의</td><td>이름 상자 / 수식 → 이름 관리자(Ctrl+F3)</td><td>자주 쓰는 마스터 범위에 이름 붙이기</td></tr>
+<tr><td>사용자 지정 서식</td><td>Ctrl+1 → 사용자 지정</td><td><code>#,##0</code> 천 단위, <code>000</code> 앞자리 0, <code>yyyy-mm-dd</code> 날짜</td></tr></table></div>
+<p>유효성 검사는 직접 입력만 막습니다. 다른 데서 복사해 붙여넣은 값은 통과하니, 남이 채운 파일은 데이터 → 유효성 검사 → 잘못된 데이터에 동그라미로 한 번 걸러 보세요.</p>`},
+
+{id:'note-filter',t:'정렬·필터',h:`
+<ul>
+<li><b>여러 기준 정렬</b>: 데이터 → 정렬 → 기준 추가. 1순위 창고, 2순위 수량 내림차순처럼 단계로.</li>
+<li><b>원하는 순서</b>: 정렬 방식에서 사용자 지정 목록에 순서를 등록. 피벗 항목 순서에도 쓰입니다.</li>
+<li><b>필터 켜고 끄기</b>: Ctrl+Shift+L. 필터 목록에 일부 행이 안 보이면 중간에 빈 행이 있는지 확인.</li>
+<li><b>보이는 행만 계산</b>: SUBTOTAL(9, 범위) 합계, (1) 평균, (3) 개수. 손으로 숨긴 행까지 빼려면 109·101·103.</li>
+<li><b>보이는 셀만 선택</b>: Alt+; 후 복사. 숨긴 행이 딸려오는 걸 막습니다.</li>
+<li>필터된 범위에 붙여넣기는 숨은 행에도 들어갈 수 있어 위험합니다. 필터를 풀고 정렬로 모은 뒤 붙여넣는 게 안전해요.</li></ul>`},
+
+{id:'note-pq',t:'파워쿼리·데이터 모델',h:`
+<p>같은 정리 작업을 매주, 매달 반복한다면 파워쿼리로 한 번 만들어 두는 게 훨씬 빠릅니다.</p>
+<h3>파워쿼리 (데이터 → 데이터 가져오기)</h3>
+<ul>
+<li>폴더에서 가져오기: 같은 양식 파일 여러 개를 한 표로 합침. 다음 달 파일을 폴더에 넣고 새로 고침만 하면 끝</li>
+<li>정리 단계(공백 제거, 열 분할, 형식 변경, 필터)가 오른쪽 "적용된 단계"에 기록됨</li>
+<li>결과 표에 손으로 고친 값은 새로 고침 때 사라짐. 수정은 쿼리 안에서</li>
+<li>열 피벗 해제: 월이 열로 늘어선 가로형 표를 세로로 쌓인 원본 형태로 바꿀 때 씀</li></ul>
+<h3>데이터 모델 (파워피벗)</h3>
+<ul>
+<li>여러 표를 품번 같은 키로 관계를 걸어 피벗 하나에서 같이 분석. VLOOKUP 보조 열이 필요 없음</li>
+<li>관계의 한쪽(마스터)은 키가 중복 없어야 함</li>
+<li>측정값(DAX)은 피벗 칸마다 다시 계산됨. 비율·평균 단가는 측정값으로
+<br><code>평균단가 := DIVIDE(SUM(출고[금액]), SUM(출고[수량]))</code></li>
+<li>자주 쓰는 DAX: SUM, DIVIDE, CALCULATE(조건 걸어 계산), DISTINCTCOUNT(고유 개수)</li></ul>`},
+
+{id:'note-key',t:'단축키 모음',h:`
+<div class="ctabw"><table class="ctab"><tr><th>키</th><th>하는 일</th></tr>%KEYS%
+<tr><td><code>Ctrl+E</code></td><td>빠른 채우기</td></tr>
+<tr><td><code>Alt+;</code></td><td>화면에 보이는 셀만 선택</td></tr>
+<tr><td><code>Ctrl+H</code></td><td>찾기 및 바꾸기</td></tr>
+<tr><td><code>Ctrl+&#96;</code></td><td>수식 보기 전환</td></tr>
+<tr><td><code>F9</code></td><td>다시 계산 (계산 옵션이 수동일 때)</td></tr>
+<tr><td><code>Ctrl+F3</code></td><td>이름 관리자</td></tr>
+<tr><td><code>Alt+F5</code></td><td>피벗 새로 고침</td></tr>
+<tr><td><code>Ctrl+Alt+F5</code></td><td>모두 새로 고침 (피벗·파워쿼리)</td></tr>
+<tr><td><code>Ctrl+Enter</code></td><td>선택한 칸 전체에 같은 값 입력</td></tr></table></div>
+<p>Windows 엑셀 기준입니다. 맥은 Ctrl 대신 Command를 쓰는 조합이 많고 일부는 다릅니다.</p>`}
+];
+
+/* ---------- 개념 정리로 이동 ---------- */
+function noteId(g){ if(!g) return 'top'; if(g.note) return g.note; if(g.kind==='key') return 'note-key'; return 'fn-'+g.id; }
+function noteLink(g){ return `<button class="link nlink" data-note="${noteId(g)}">개념 정리에서 보기 →</button>`; }
+function openNotes(id){
+  st.notesFrom=st.view==='notes'?(st.notesFrom||'home'):st.view; st.noteAt=id; st.view='notes'; render();
+  const el=id&&id!=='top'?document.getElementById(id):null;
+  if(el){ el.scrollIntoView({block:'start'}); if(el.classList.contains('fni')) el.classList.add('hit'); } else window.scrollTo(0,0);
+}
+
+/* ---------- 개념·실무 객관식 ---------- */
+function quizPlay(){
+  const g=G(),p=P();
+  app.innerHTML=`${topBar()}
+  <p class="q">${esc(p.q)}</p>
+  <div class="opts">${p.o.map((x,k)=>`<button class="opt" data-qo="${k}"><span class="on">${'ABCD'[k]}</span><span>${esc(x)}</span></button>`).join('')}</div>
+  <div class="helper" id="helper"></div>
+  <div class="tip">${g.tip||''}${noteLink(g)}</div>`;
+  drawQuiz();
+}
+function drawQuiz(){
+  const p=P(),r=st.result;
+  document.querySelectorAll('.opt').forEach((b,k)=>{
+    b.classList.toggle('sel',st.pick===k&&!r);
+    b.classList.toggle('right',!!(r&&r.ok&&k===p.a));
+    b.classList.toggle('wrong',!!(r&&!r.ok&&k===st.pick));
+  });
+  const last=st.qi===G().list.length-1, nextBtn=`<button class="primary" id="next">${last?'목록으로':'다음 문제 →'}</button>`;
+  let out='';
+  if(r&&r.ok) out=`<div class="fb ${r.shown?'show':'ok'}"><span class="h">${r.shown?'정답':'정답입니다'}</span><p>${esc(p.x)}</p><div class="row">${nextBtn}</div></div>`;
+  else if(r) out=`<div class="fb bad"><span class="h">아니에요</span><p>다른 보기를 골라보세요.</p><div class="row"><button class="ghost" id="reveal">정답 보기</button></div></div>`;
+  document.getElementById('helper').innerHTML=out;
+}
+function quizPick(k){
+  if(st.result&&st.result.ok) return;
+  const p=P(); st.pick=k; const ok=k===p.a; st.result={ok};
+  if(ok&&!st.revealed){ store.solved[st.gid+':'+st.qi]=1; save(); }
+  drawQuiz(); updateNav();
+}
+
+/* ---------- 피벗 실습 ---------- */
+const AREA_NM={filter:'필터',cols:'열',rows:'행',vals:'값'};
+function pivotPlay(){
+  const g=G(),p=P();
+  app.innerHTML=`${topBar()}
+  <p class="q">${esc(p.q)}</p>
+  <details class="src"><summary>원본 데이터 보기 (${PVD.length}건)</summary><div class="ctabw"><table class="ctab"><tr>${PVF.map(f=>`<th>${esc(f)}</th>`).join('')}</tr>${PVD.map(r=>`<tr>${PVF.map(f=>`<td class="${typeof r[f]==='number'?'n':''}">${typeof r[f]==='number'?pvNum(r[f]):esc(r[f])}</td>`).join('')}</tr>`).join('')}</table></div></details>
+  <span class="lbl">피벗 테이블 필드 · 필드를 누른 뒤 넣을 영역을 누르세요</span>
+  <div class="pfields" id="pfields"></div>
+  <div class="pareas" id="pareas"></div>
+  <div class="pset" id="pset"></div>
+  <div class="actions"><button class="ghost" id="clear">지우기</button><button class="primary" id="go">확인 <kbd>Enter</kbd></button></div>
+  <div class="helper" id="helper"></div>
+  <span class="lbl">피벗 결과</span>
+  <div class="ctabw pout" id="pout"></div>
+  <div class="tip">${g.tip}${noteLink(g)}</div>`;
+  drawPivot();
+}
+function drawPivot(){
+  const c=st.pv, used=new Set([...c.rows,...c.cols,...c.vals.map(v=>v.f),...(c.filter?[c.filter.f]:[])]);
+  document.getElementById('pfields').innerHTML=PVF.map(f=>`<button class="pf ${st.pvSel===f?'sel':''} ${used.has(f)?'used':''}" data-pf="${esc(f)}">${esc(f)}</button>`).join('');
+  const chip=(a,i,txt)=>`<button class="pchip" data-prm="${a}:${i}" aria-label="${esc(txt)} 빼기"><span>${esc(txt)}</span><i>×</i></button>`;
+  const box=a=>{ const items=a==='vals'?c.vals.map((v,i)=>chip(a,i,v.agg+' : '+v.f)):a==='filter'?(c.filter?[chip(a,0,c.filter.f+' = '+c.filter.v)]:[]):c[a].map((f,i)=>chip(a,i,f));
+    return `<div class="parea ${st.pvSel?'armed':''}" data-area="${a}"><button class="pah" data-pa="${a}"><span>${AREA_NM[a]}</span><span>${st.pvSel?'＋ 넣기':''}</span></button>${items.join('')}</div>`; };
+  document.getElementById('pareas').innerHTML=['filter','cols','rows','vals'].map(box).join('');
+  let ps='';
+  c.vals.forEach((v,i)=>{ ps+=`<span class="lbl">값 필드 설정 · ${esc(v.f)} 요약 기준</span><div class="chips">${AGGS.map(a=>`<button class="chip ${v.agg===a?'sel':''}" data-agg="${i}:${a}">${a}</button>`).join('')}</div>`; });
+  if(c.filter){ const items=['(모두)',...[...new Set(PVD.map(r=>String(r[c.filter.f])))].sort(nsort)];
+    ps+=`<span class="lbl">필터 항목 · ${esc(c.filter.f)}</span><div class="chips">${items.map(x=>`<button class="chip ${c.filter.v===x?'sel':''}" data-fv="${esc(x)}">${esc(x)}</button>`).join('')}</div>`; }
+  if(st.msg) ps=`<p class="msg">${esc(st.msg)}</p>`+ps;
+  document.getElementById('pset').innerHTML=ps;
+  document.getElementById('pout').innerHTML=pvTable(pivotCalc(c),c.cols.join(' / '));
+  drawPvHelper();
+}
+function drawPvHelper(){
+  const p=P(),r=st.result,h=document.getElementById('helper');
+  const last=st.qi===G().list.length-1, nextBtn=`<button class="primary" id="next">${last?'목록으로':'다음 문제 →'}</button>`;
+  let out='';
+  if(r&&r.ok) out=`<div class="fb ${r.shown?'show':'ok'}"><span class="h">${r.shown?'정답 배치':'정답입니다'}</span><p>${esc(p.x)}</p><div class="row">${nextBtn}</div></div>`;
+  else if(r) out=`<div class="fb bad"><span class="h">다시 해볼까요</span><p>${esc(r.hint)}</p><div class="row"><button class="ghost" id="retry">고쳐보기</button><button class="ghost" id="reveal">정답 보기</button></div></div>`;
+  h.innerHTML=out;
+}
+function pvPlace(a){
+  const f=st.pvSel; if(!f||!a) return; const c=st.pv; st.msg=''; st.result=null;
+  if(a==='vals'){
+    if(c.vals.length>=2){ st.msg='이 연습에선 값 영역에 필드를 두 개까지만 넣을 수 있어요.'; }
+    else c.vals.push({f,agg:isNumF(f)?'합계':'개수'});
+  } else {
+    const max=a==='rows'?2:1;
+    if(a!=='filter'&&c[a].includes(f)){ st.pvSel=null; drawPivot(); return; }
+    c.rows=c.rows.filter(x=>x!==f); c.cols=c.cols.filter(x=>x!==f); if(c.filter&&c.filter.f===f) c.filter=null;
+    if(a==='filter') c.filter={f,v:'(모두)'};
+    else if(c[a].length>=max) st.msg=`이 연습에선 ${AREA_NM[a]} 영역에 필드를 ${max}개까지만 넣을 수 있어요.`;
+    else c[a].push(f);
+  }
+  st.pvSel=null; drawPivot();
+}
+function pvClick(t,d){
+  const c=st.pv;
+  if(d.pf!=null){ st.pvSel=st.pvSel===d.pf?null:d.pf; st.msg=''; drawPivot(); return; }
+  if(d.pa){ pvPlace(d.pa); return; }
+  if(d.prm){ const [a,i]=d.prm.split(':'); if(a==='filter') c.filter=null; else c[a].splice(+i,1); st.result=null; drawPivot(); return; }
+  if(d.agg){ const [i,ag]=d.agg.split(':'); c.vals[+i].agg=ag; st.result=null; drawPivot(); return; }
+  if(d.fv!=null){ c.filter.v=d.fv; st.result=null; drawPivot(); return; }
+  if(t.id==='clear'){ st.pv={rows:[],cols:[],vals:[],filter:null}; st.pvSel=null; st.result=null; st.msg=''; drawPivot(); return; }
+  if(t.id==='retry'){ st.result=null; drawPivot(); return; }
+  if(t.id==='go'){ pvCheck(); return; }
+  if(t.id==='reveal'){ st.pv=JSON.parse(JSON.stringify(Object.assign({filter:null},P().target))); st.revealed=true; st.pvSel=null; st.result={ok:true,shown:true}; drawPivot(); return; }
+}
+function pvCheck(){
+  const p=P(),c=st.pv,T=Object.assign({cols:[],filter:null},p.target);
+  if(!c.vals.length){ st.msg='값 영역에 필드를 하나 이상 넣어야 피벗이 만들어집니다.'; drawPivot(); return; }
+  const ok=pvCanon(pivotCalc(c))===pvCanon(p.exp);
+  let hint='';
+  if(!ok){
+    const eq=(a,b)=>a.length===b.length&&a.every((x,i)=>x===b[i]);
+    const tf=T.filter?T.filter.f+'='+T.filter.v:'', cf=c.filter&&c.filter.v!=='(모두)'?c.filter.f+'='+c.filter.v:'';
+    if(!eq(c.rows,T.rows)) hint='행 영역에 들어간 필드가 문제에서 묻는 기준과 달라요. 무엇별로 보려는지(창고별, 품목별…) 다시 읽어보세요.';
+    else if(!eq(c.cols,T.cols)) hint=T.cols.length?'열 영역을 확인하세요. 표를 가로로도 나눠야 합니다.':'열 영역은 비워 두는 문제예요. 열에 필드가 있으면 표가 옆으로 쪼개집니다.';
+    else if(c.vals.length!==T.vals.length||c.vals.some((v,i)=>T.vals[i].agg!=='개수'&&v.f!==T.vals[i].f)) hint='값 영역에 넣은 필드가 달라요. 무엇을 집계하는지(수량, 금액, 건수) 다시 확인하세요.';
+    else if(c.vals.some((v,i)=>v.agg!==T.vals[i].agg)) hint='값 필드는 맞는데 요약 기준이 달라요. 값 필드 설정에서 합계·개수·평균 중 문제에 맞는 걸 고르세요.';
+    else if(tf!==cf) hint=T.filter?'특정 달만 보려면 그 필드를 필터 영역에 넣고 항목을 골라야 합니다.':'필터가 걸려 있어 일부 데이터가 빠졌어요. 필터를 (모두)로 두거나 빼세요.';
+    else hint='결과가 정답과 달라요. 영역 배치를 다시 확인하세요.';
+  }
+  st.result={ok,hint}; st.msg='';
+  if(ok&&!st.revealed){ store.solved[st.gid+':'+st.qi]=1; save(); }
+  drawPivot(); updateNav();
+}
+
+/* ---------- 개념 정리 페이지 ---------- */
+function notes(){
+  const lvName=Object.fromEntries(LEVELS.map(l=>[l.id,l.name]));
+  const fnGroups=GROUPS.filter(g=>!g.kind);
+  const fnList=['basic','mid','adv'].map(lv=>`<h3>${lvName[lv]}</h3><div class="fnl">${fnGroups.filter(g=>g.level===lv).map(g=>`<div class="fni" id="fn-${g.id}"><div class="t"><b>${esc(g.name)}</b><span>${esc(g.sig)}</span></div><p>${esc(g.desc)}</p><div class="tp">${g.tip}</div></div>`).join('')}</div>`).join('');
+  const keyRows=GROUPS.filter(g=>g.kind==='key').flatMap(g=>g.items).map(k=>`<tr><td><code>${esc(k.k.join('+'))}</code></td><td>${esc(k.q)}</td></tr>`).join('');
+  const sec=NOTE_SECTIONS.map(s=>`<section><h2 id="${s.id}">${s.t}</h2>${s.id==='note-fn'?s.h+fnList:s.id==='note-key'?s.h.replace('%KEYS%',()=>keyRows):s.h}</section>`).join('');
+  app.innerHTML=`<div class="notes" style="display:flex;flex-direction:column;gap:14px">
+  <div class="top"><button class="back" id="nback">← ${st.notesFrom==='play'?'문제로':'목록'}</button><span class="gname">개념 정리</span></div>
+  <h1 id="top">개념 정리</h1>
+  <p class="sub">문제 풀다 막히면 여기서 확인하세요. 각 문제 아래 '개념 정리에서 보기'를 누르면 해당 부분으로 바로 옵니다.</p>
+  <nav class="toc">${NOTE_SECTIONS.map(s=>`<button data-toc="${s.id}">${s.t}</button>`).join('')}</nav>
+  ${sec}</div>`;
+}
+
 /* ---------- 이벤트 ---------- */
 app.addEventListener('click',e=>{
-  const t=e.target.closest('button'); if(!t) return; const d=t.dataset;
+  const t=e.target.closest('button');
+  if(!t){ const pa=e.target.closest('.parea'); if(pa&&st.view==='play'&&G().kind==='pivot') pvPlace(pa.dataset.area); return; }
+  const d=t.dataset;
+  if(d.note){ openNotes(d.note); return; }
+  if(d.toc){ const el=document.getElementById(d.toc); if(el) el.scrollIntoView({block:'start'}); return; }
+  if(t.id==='nback'){ st.view=st.notesFrom||'home'; render(); window.scrollTo(0,0); return; }
   if(d.tab){ st.level=d.tab; store.level=d.tab; save(); home(); return; }
   if(d.g){ st.gid=d.g; st.qi=0; st.view='play'; reset(); render(); window.scrollTo(0,0); return; }
   if(t.id==='back'){ st.view='home'; render(); window.scrollTo(0,0); return; }
   if(d.jump!=null){ st.qi=+d.jump; reset(); render(); return; }
   if(t.id==='reset'){ if(t.classList.contains('armed')){ store.solved={}; save(); home(); } else { t.classList.add('armed'); t.textContent='한 번 더 누르면 지워집니다'; } return; }
   if(t.id==='next'){ next(); return; }
+  if(G()&&G().kind==='quiz'){
+    if(d.qo!=null){ quizPick(+d.qo); return; }
+    if(t.id==='reveal'){ st.revealed=true; st.pick=P().a; st.result={ok:true,shown:true}; drawQuiz(); return; }
+    return;
+  }
+  if(G()&&G().kind==='pivot'){ pvClick(t,d); return; }
   const isKey=G()&&G().kind==='key';
   if(isKey){
     if(d.m){ st.mods=st.mods.includes(d.m)?st.mods.filter(x=>x!==d.m):[...st.mods,d.m]; st.result=null; st.msg=''; drawKey(); return; }
@@ -962,6 +1592,12 @@ app.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{
   if(st.view!=='play') return; const g=G();
+  if(g.kind==='quiz'){
+    if(e.key==='Enter'&&st.result&&st.result.ok){ e.preventDefault(); next(); return; }
+    const n='1234'.indexOf(e.key); if(n>=0&&n<P().o.length&&!(st.result&&st.result.ok)){ e.preventDefault(); quizPick(n); }
+    return;
+  }
+  if(g.kind==='pivot'){ if(e.key==='Enter'){ e.preventDefault(); if(st.result&&st.result.ok) next(); else pvCheck(); } return; }
   if(g.kind==='key'){
     const plain=!e.ctrlKey&&!e.altKey&&!e.shiftKey&&!e.metaKey;
     if(e.code==='Enter'&&plain&&st.result&&st.result.ok){ e.preventDefault(); next(); return; }
@@ -978,14 +1614,20 @@ render();
 
 <script>
 (function(){
-  var _r = render;
+  var _r = render, stack = ['home'], ignore = 0;
   render = function(){
     _r();
-    if (st.view === 'play' && location.hash !== '#play') location.hash = 'play';
-    if (st.view === 'home' && location.hash === '#play') history.back();
+    var v = st.view, i = stack.lastIndexOf(v);
+    if (i === stack.length - 1) return;
+    if (i >= 0) { var n = stack.length - 1 - i; stack.length = i + 1; ignore++; history.go(-n); }
+    else { stack.push(v); ignore++; location.hash = v; }
   };
   window.addEventListener('hashchange', function(){
-    if (location.hash !== '#play' && st.view === 'play') { st.view = 'home'; _r(); window.scrollTo(0,0); }
+    if (ignore > 0) { ignore--; return; }
+    var h = location.hash.slice(1) || 'home', i = stack.lastIndexOf(h);
+    stack.length = i >= 0 ? i + 1 : 1;
+    if (i < 0) h = 'home';
+    if (st.view !== h) { st.view = h; _r(); window.scrollTo(0,0); }
   });
 })();
 </script>

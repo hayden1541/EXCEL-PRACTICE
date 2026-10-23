@@ -1,5 +1,5 @@
 // 엑셀 실무 드릴 서비스워커: 온라인이면 새 파일, 오프라인이면 저장해 둔 파일
-const V = 'excel-drill-579dc4b783';
+const V = 'excel-drill-3ce8638fc0';
 const FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png"];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('excel-drill-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
